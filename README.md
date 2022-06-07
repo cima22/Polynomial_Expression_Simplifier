@@ -14,5 +14,5 @@ The polynomial algebraic expressions $e_1$ and $e_2$ are *equivalent*  whenever 
 - accepting the distributive law,  e.g., $(x + 3) * y$ is equivalent to $x * y + 3 * y$, respectively.
 If  $e$ is a polynomial algebraic expression and $x$ one of its variables, then $e$ can be rewritten as an equivalent polynomial algebraic expression:
 $$a_0x^0 + a_1x^1 + ... + a_{n_x}x^{n_x}$$ where $x^i$ denotes the i-th natural power of $x$, $n_x$ is the maximum degree of $x$ in $e$, and the $a_i$'s are the (possible non-constants) $x$-coefficients of $e$ of degree $i$. For instance, $(x-4 * y+3) * x-2$ is equivalent to
-$$-2 * x^0 + (3 - 4 * y) * x^1 + 1 * x^2$$.
+$$-2 * x^0 + (3 - 4 * y) * x^1 + 1 * x^2$$
 Thus, -2, (3 - 4 * y), and 1 are the expression $x$-coefficients of degree 0, 1, and 2, respectively.
