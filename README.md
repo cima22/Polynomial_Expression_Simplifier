@@ -4,4 +4,4 @@ Project related to the course "Advanced Programming" @ Units. The goal is to bui
 ## Problem description
 A *polynomial algebraic expression* is either:
 - a *variable*
-- a constant value in $ciao$
+- a constant value in $\mathbb{Z}$
