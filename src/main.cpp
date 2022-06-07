@@ -1,20 +1,25 @@
 #include <iostream>
+#include "var.h"
 #include "expr.h"
+#include <string>
+/*
+Expr operator+(const Var& v, int c){
+	std::vector<Var> vars{v};
+	std::string expr = v.get_name() + " + " + std::to_string(c);
+	return Expr{expr,vars};
+}*/
 
 int main(int argc, char* argv[]){
 
-	Var v{"x",4};
-	std::cout << v << std::endl;
-	v.set_value(5.5);
-	std::cout << "New v: " << v << std::endl;
-	Var v2{"ciao", 4.5};
-	std::cout << v2 << std::endl;
-	Var z = v + v2;
-	z.set_name("z");
-	std::cout << z << std::endl;
+	Expr ex1{"x + z"};
+	Expr ex2{"23 + z + p"};
 
-	std::cout << v * z << std::endl << z - v << std::endl;
-
-	Expr ex1{"x + y - 4"};
-	std::cout << ex1;
+	Var x{"x",2};
+	Var y{"y",3};
+	//Expr ex = x + 3;
+	//std::cout << ex;
+	//std::cout << ex1 + ex2;
+	Expr sum = x + 3;
+	std::cout << sum;
+	
 }

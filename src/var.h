@@ -1,4 +1,8 @@
+#ifndef _VAR_
+#define _VAR_
+
 #include <iostream>
+#include <string>
 
 class Var{
 	private:
@@ -17,7 +21,9 @@ class Var{
 		void               set_value(const float new_value);
 		
 		friend std::ostream& operator<< (std::ostream& os, const Var& v);
-		friend Var           operator+  (const Var& v1, const Var& v2);
-		friend Var           operator-  (const Var& v1, const Var& v2);
-		friend Var           operator*  (const Var& v1, const Var& v2);
+		//friend Var           operator+  (const Var& v1, const Var& v2);
+		//friend Var           operator-  (const Var& v1, const Var& v2);
+		//friend Var           operator*  (const Var& v1, const Var& v2);
 };
+
+#endif
