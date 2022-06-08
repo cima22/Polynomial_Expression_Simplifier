@@ -24,6 +24,7 @@ class Var{
 		//friend Var           operator+  (const Var& v1, const Var& v2);
 		//friend Var           operator-  (const Var& v1, const Var& v2);
 		//friend Var           operator*  (const Var& v1, const Var& v2);
+		//friend Var operator+(const Var& v1, int i);
 };
 
 #endif

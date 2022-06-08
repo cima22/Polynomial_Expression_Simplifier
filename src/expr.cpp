@@ -3,7 +3,7 @@
 Expr::Expr(const std::string& expr):
 	expression{expr},vars{}{
 
-	extract_vars();
+//	extract_vars();
 
 	}
 
@@ -27,14 +27,6 @@ void Expr::extract_vars(){
 std::ostream& operator<<(std::ostream& os, const Expr& expr){
 	os << expr.expression;
 	return os;
-}
-int a = 3;
-//template <typename T>
-
-Expr operator+(const Var& v, int i){
-	std::vector<Var> vars{v};
-	std::string expr = v.get_name() + " + " + std::to_string(i);
-	return Expr{expr,vars};
 }
 
 Expr operator+(const Expr& e1, const Expr& e2){

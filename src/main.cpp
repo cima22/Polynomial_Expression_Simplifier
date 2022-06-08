@@ -19,7 +19,6 @@ int main(int argc, char* argv[]){
 	//Expr ex = x + 3;
 	//std::cout << ex;
 	//std::cout << ex1 + ex2;
-	Expr sum = x + 3;
-	std::cout << sum;
+	std::cout << x + 3 << "\n" << 2 - x << "\n" << y * 2.5 << std::endl;
 	
 }
