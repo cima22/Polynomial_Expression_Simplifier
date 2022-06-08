@@ -22,7 +22,15 @@ class Expr{
 		//template <typename T>
 		
 		friend Expr operator+(const Expr& e1, const Expr& e2);
-		friend Expr operator+(const Expr& e1, int i);	
+
+		friend Expr operator+(const Expr& e1, int i);
+		friend Expr operator+(int i, const Expr& e1);
+
+		friend Expr operator-(const Expr& e1, int i);
+		friend Expr operator-(int i, const Expr& e1);
+		
+		friend Expr operator*(const Expr& e1, int i);
+		friend Expr operator*(int i, const Expr& e1);
 };
 
 template <typename T>
