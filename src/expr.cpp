@@ -38,3 +38,39 @@ Expr operator+(const Expr& e1, int i){
 	std::string sum = e1.expression + " + " + std::to_string(i);
 	return Expr{sum};
 }
+
+Expr operator+ (const Var& v, int c){
+	std::vector<Var> vars{v};
+	std::string expr = v.get_name() + " + " + std::to_string(c);
+	return Expr{expr,vars};
+}
+
+Expr operator+ (int c, const Var& v){
+	std::vector<Var> vars{v};
+	std::string expr = std::to_string(c) + " + " +  v.get_name();
+	return Expr{expr,vars};
+}
+
+Expr operator- (const Var& v, int c){
+	std::vector<Var> vars{v};
+	std::string expr = v.get_name() + " - " + std::to_string(c);
+	return Expr{expr,vars};
+}
+
+Expr operator- (int c, const Var& v){
+	std::vector<Var> vars{v};
+	std::string expr = std::to_string(c) + " - " + v.get_name();
+	return Expr{expr,vars};
+}
+
+Expr operator* (const Var& v, int c){
+	std::vector<Var> vars{v};
+	std::string expr = v.get_name() + " * " + std::to_string(c);
+	return Expr{expr,vars};
+}
+
+Expr operator* (int c, const Var& v){
+	std::vector<Var> vars{v};
+	std::string expr = std::to_string(c) + " * " + v.get_name();
+	return Expr{expr,vars};
+}
