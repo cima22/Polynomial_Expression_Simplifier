@@ -28,6 +28,8 @@ int main(int argc, char* argv[]){
 	int a = 2 + 3 * 4;
 	std::cout << a << std::endl;
 	*/
-	Expr ex = x + 2 * y * x - 10;
-	std::cout << ex; 
+	Expr ex = (x + 2 + y) * (y * (x - 10));
+	std::cout << ex << std::endl;
+	for(auto& v : ex.get_variables())
+		std::cout << v.get_name() << "\n";
 }

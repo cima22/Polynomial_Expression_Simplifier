@@ -220,8 +220,8 @@ Expr operator+(const Expr& e1, const Expr& e2){
 			}
 		if(!already_present)
 			vars.push_back(v2);
-	return Expr{expr,vars};
 	}
+	return Expr{expr,vars};
 }
 
 Expr operator-(const Expr& e1, const Expr& e2){
@@ -236,8 +236,8 @@ Expr operator-(const Expr& e1, const Expr& e2){
 			}
 		if(!already_present)
 			vars.push_back(v2);
-	return Expr{expr,vars};
 	}
+	return Expr{expr,vars};
 }
 
 Expr operator*(const Expr& e1, const Expr& e2){
@@ -252,6 +252,6 @@ Expr operator*(const Expr& e1, const Expr& e2){
 			}
 		if(!already_present)
 			vars.push_back(v2);
+	}	
 	return Expr{expr,vars};
-	}
 }
