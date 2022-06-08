@@ -223,3 +223,35 @@ Expr operator+(const Expr& e1, const Expr& e2){
 	return Expr{expr,vars};
 	}
 }
+
+Expr operator-(const Expr& e1, const Expr& e2){
+	std::string expr = "(" + e1.expression + ") - (" + e2.expression + ")";
+	std::vector<Var> vars{e1.get_variables()};
+	for(auto& v2 : e2.get_variables()){
+		bool already_present = false;
+		for(auto& v1 : e1.get_variables())
+			if(&v1 == &v2){
+				already_present = true;
+					break;
+			}
+		if(!already_present)
+			vars.push_back(v2);
+	return Expr{expr,vars};
+	}
+}
+
+Expr operator*(const Expr& e1, const Expr& e2){
+	std::string expr = "(" + e1.expression + ") * (" + e2.expression + ")";
+	std::vector<Var> vars{e1.get_variables()};
+	for(auto& v2 : e2.get_variables()){
+		bool already_present = false;
+		for(auto& v1 : e1.get_variables())
+			if(&v1 == &v2){
+				already_present = true;
+					break;
+			}
+		if(!already_present)
+			vars.push_back(v2);
+	return Expr{expr,vars};
+	}
+}
