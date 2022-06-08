@@ -126,7 +126,16 @@ Expr operator*(int i, const Expr& e1){
 
 Expr operator+ (const Expr& e1, const Var& v1){
 	std::string expr = "(" + e1.expression + ") + " + v1.get_name();
-	return Expr{expr,e1.get_variables()};
+	std::vector<Var> vars{e1.get_variables()};
+	bool already_present = false;
+	for(auto& v : e1.get_variables())
+		if(&v == &v1){
+			already_present = true;
+			break;
+		}
+	if(!already_present)
+		vars.push_back(v1);
+	return Expr{expr,vars};
 }
 
 Expr operator+(int i, const Expr& e1){
