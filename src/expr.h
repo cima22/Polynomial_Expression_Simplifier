@@ -33,47 +33,13 @@ class Expr{
 		friend Expr operator*(int i, const Expr& e1);
 };
 
-template <typename T>
-Expr operator+ (const Var& v, T c){
-	std::vector<Var> vars{v};
-	std::string expr = v.get_name() + " + " + std::to_string(c);
-	return Expr{expr,vars};
-}
+Expr operator+ (const Var& v, int c);
+Expr operator+ (int c, const Var& v);
 
-template <typename T>
-Expr operator+ (T c, const Var& v){
-	std::vector<Var> vars{v};
-	std::string expr = std::to_string(c) + " + " +  v.get_name();
-	return Expr{expr,vars};
-}
+Expr operator- (const Var& v, int c);
+Expr operator- (int c, const Var& v);
 
-template <typename T>
-Expr operator- (const Var& v, T c){
-	std::vector<Var> vars{v};
-	std::string expr = v.get_name() + " - " + std::to_string(c);
-	return Expr{expr,vars};
-}
-
-template <typename T>
-Expr operator- (T c, const Var& v){
-	std::vector<Var> vars{v};
-	std::string expr = std::to_string(c) + " - " + v.get_name();
-	return Expr{expr,vars};
-}
-
-template <typename T>
-Expr operator* (const Var& v, T c){
-	std::vector<Var> vars{v};
-	std::string expr = v.get_name() + " * " + std::to_string(c);
-	return Expr{expr,vars};
-}
-
-template <typename T>
-Expr operator* (T c, const Var& v){
-	std::vector<Var> vars{v};
-	std::string expr = std::to_string(c) + " * " + v.get_name();
-	return Expr{expr,vars};
-}
-
+Expr operator* (const Var& v, int c);
+Expr operator* (int c, const Var& v);
 
 #endif
