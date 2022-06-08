@@ -22,21 +22,16 @@ void Expr::extract_vars(){
 			names.push_back(c);
 		}	
 	}
+	for(char name : names)
+		vars.push_back(Var{std::to_string(name)});
+
 }
+
+std::vector<Var> Expr::get_variables() const { return vars;  }
 
 std::ostream& operator<<(std::ostream& os, const Expr& expr){
 	os << expr.expression;
 	return os;
-}
-
-Expr operator+(const Expr& e1, const Expr& e2){
-	std::string sum = e1.expression + " + " + e2.expression;
-	return Expr{sum};
-}
-
-Expr operator+(const Expr& e1, int i){
-	std::string sum = e1.expression + " + " + std::to_string(i);
-	return Expr{sum};
 }
 
 Expr operator+ (const Var& v, int c){
@@ -74,3 +69,38 @@ Expr operator* (int c, const Var& v){
 	std::string expr = std::to_string(c) + " * " + v.get_name();
 	return Expr{expr,vars};
 }
+
+Expr operator+ (const Var& v1, const Var& v2){
+	std::vector<Var> vars{v1};
+	if(&v1 != &v2)
+		vars.push_back(v2);
+	std::string expr = v1.get_name() + " + " + v2.get_name();
+	return Expr{expr,vars};
+}
+
+Expr operator- (const Var& v1, const Var& v2){
+	std::vector<Var> vars{v1};
+	if(&v1 != &v2)
+		vars.push_back(v2);
+	std::string expr = v1.get_name() + " - " + v2.get_name();
+	return Expr{expr,vars};
+}
+
+Expr operator* (const Var& v1, const Var& v2){
+	std::vector<Var> vars{v1};
+	if(&v1 != &v2)
+		vars.push_back(v2);
+	std::string expr = v1.get_name() + " * " + v2.get_name();
+	return Expr{expr,vars};
+}
+
+Expr operator+ (const Expr& e1, int i){
+	std::string expr = e1.expression + " + " + std::to_string(i);
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator+(int i, const Expr& e1){
+
+}
+
+Expr
