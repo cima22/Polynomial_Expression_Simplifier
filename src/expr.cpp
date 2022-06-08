@@ -95,12 +95,61 @@ Expr operator* (const Var& v1, const Var& v2){
 }
 
 Expr operator+ (const Expr& e1, int i){
-	std::string expr = e1.expression + " + " + std::to_string(i);
+	std::string expr = "(" + e1.expression + ") + " + std::to_string(i);
 	return Expr{expr,e1.get_variables()};
 }
 
 Expr operator+(int i, const Expr& e1){
-
+	std::string expr = std::to_string(i) + " + (" + e1.expression + ")";
+	return Expr{expr,e1.get_variables()};
 }
 
-Expr
+Expr operator- (const Expr& e1, int i){
+	std::string expr = "(" + e1.expression + ") - " + std::to_string(i);
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator-(int i, const Expr& e1){
+	std::string expr = std::to_string(i) + " - (" + e1.expression + ")";
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator* (const Expr& e1, int i){
+	std::string expr = "(" + e1.expression + ") * " + std::to_string(i);
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator*(int i, const Expr& e1){
+	std::string expr = std::to_string(i) + " * (" + e1.expression + ")";
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator+ (const Expr& e1, const Var& v1){
+	std::string expr = "(" + e1.expression + ") + " + v1.get_name();
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator+(int i, const Expr& e1){
+	std::string expr = std::to_string(i) + " + (" + e1.expression + ")";
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator- (const Expr& e1, int i){
+	std::string expr = "(" + e1.expression + ") - " + std::to_string(i);
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator-(int i, const Expr& e1){
+	std::string expr = std::to_string(i) + " - (" + e1.expression + ")";
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator* (const Expr& e1, int i){
+	std::string expr = "(" + e1.expression + ") * " + std::to_string(i);
+	return Expr{expr,e1.get_variables()};
+}
+
+Expr operator*(int i, const Expr& e1){
+	std::string expr = std::to_string(i) + " * (" + e1.expression + ")";
+	return Expr{expr,e1.get_variables()};
+}
