@@ -138,27 +138,71 @@ Expr operator+ (const Expr& e1, const Var& v1){
 	return Expr{expr,vars};
 }
 
-Expr operator+(int i, const Expr& e1){
-	std::string expr = std::to_string(i) + " + (" + e1.expression + ")";
-	return Expr{expr,e1.get_variables()};
+Expr operator+(const Var& v1, const Expr& e1){
+	std::string expr =  v1.get_name() " + (" + e1.expression;
+	std::vector<Var> vars{e1.get_variables()};
+	bool already_present = false;
+	for(auto& v : e1.get_variables())
+		if(&v == &v1){
+			already_present = true;
+			break;
+		}
+	if(!already_present)
+		vars.push_back(v1);
+	return Expr{expr,vars};
 }
 
-Expr operator- (const Expr& e1, int i){
-	std::string expr = "(" + e1.expression + ") - " + std::to_string(i);
-	return Expr{expr,e1.get_variables()};
+Expr operator- (const Expr& e1, const Var& v1){
+	std::string expr = "(" + e1.expression + ") - " + v1.get_name();
+	std::vector<Var> vars{e1.get_variables()};
+	bool already_present = false;
+	for(auto& v : e1.get_variables())
+		if(&v == &v1){
+			already_present = true;
+			break;
+		}
+	if(!already_present)
+		vars.push_back(v1);
+	return Expr{expr,vars};
+
+Expr operator-(const Var& v1, const Expr& e1){
+	std::string expr = v1.get_name() + " - (" + e1.expression + ");
+	std::vector<Var> vars{e1.get_variables()};
+	bool already_present = false;
+	for(auto& v : e1.get_variables())
+		if(&v == &v1){
+			already_present = true;
+			break;
+		}
+	if(!already_present)
+		vars.push_back(v1);
+	return Expr{expr,vars};
 }
 
-Expr operator-(int i, const Expr& e1){
-	std::string expr = std::to_string(i) + " - (" + e1.expression + ")";
-	return Expr{expr,e1.get_variables()};
+Expr operator* (const Expr& e1, const Var& v1){
+	std::string expr = "(" + e1.expression + ") * " + v1.get_name();
+	std::vector<Var> vars{e1.get_variables()};
+	bool already_present = false;
+	for(auto& v : e1.get_variables())
+		if(&v == &v1){
+			already_present = true;
+			break;
+		}
+	if(!already_present)
+		vars.push_back(v1);
+	return Expr{expr,vars};
 }
 
-Expr operator* (const Expr& e1, int i){
-	std::string expr = "(" + e1.expression + ") * " + std::to_string(i);
-	return Expr{expr,e1.get_variables()};
-}
-
-Expr operator*(int i, const Expr& e1){
-	std::string expr = std::to_string(i) + " * (" + e1.expression + ")";
-	return Expr{expr,e1.get_variables()};
+Expr operator*(const Var& v1, const Expr& e1){
+	std::string expr = v1.get_name() + " * (" + e1.expression + ")";
+	std::vector<Var> vars{e1.get_variables()};
+	bool already_present = false;
+	for(auto& v : e1.get_variables())
+		if(&v == &v1){
+			already_present = true;
+			break;
+		}
+	if(!already_present)
+		vars.push_back(v1);
+	return Expr{expr,vars};
 }
