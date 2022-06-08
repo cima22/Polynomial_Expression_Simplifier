@@ -20,12 +20,14 @@ int main(int argc, char* argv[]){
 	//std::cout << ex;
 	//std::cout << ex1 + ex2;
 	//std::cout << "x+3 = " << x + 3 << "\n" << "5*y = " << 5*y << "\n" << "x-y = " << x-y << "\n" <<"y*y = " << y * y << std::endl;
-
+	/*
 	std::vector<Var> vars = (y + x).get_variables();
 	for(auto& v : vars)
 		std::cout << v.get_name() << "\n";
 
 	int a = 2 + 3 * 4;
 	std::cout << a << std::endl;
-	
+	*/
+	Expr ex = x + 2 * y * x - 10;
+	std::cout << ex; 
 }
