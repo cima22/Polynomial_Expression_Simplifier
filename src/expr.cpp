@@ -27,7 +27,11 @@ void Expr::extract_vars(){
 
 }
 
-std::vector<Var> Expr::get_variables() const { return vars;  }
+int Expr::evaluate(const std::vector<Var>& v) const{
+	return 0;
+}
+
+std::vector<Var> Expr::get_variables() const { return vars; }
 
 std::ostream& operator<<(std::ostream& os, const Expr& expr){
 	os << expr.expression;
@@ -72,7 +76,7 @@ Expr operator* (int c, const Var& v){
 
 Expr operator+ (const Var& v1, const Var& v2){
 	std::vector<Var> vars{v1};
-	if(&v1 != &v2)
+	if(v1.get_name().compare(v2.get_name()) != 0)
 		vars.push_back(v2);
 	std::string expr = v1.get_name() + " + " + v2.get_name();
 	return Expr{expr,vars};
@@ -80,7 +84,7 @@ Expr operator+ (const Var& v1, const Var& v2){
 
 Expr operator- (const Var& v1, const Var& v2){
 	std::vector<Var> vars{v1};
-	if(&v1 != &v2)
+	if(v1.get_name().compare(v2.get_name()) != 0)
 		vars.push_back(v2);
 	std::string expr = v1.get_name() + " - " + v2.get_name();
 	return Expr{expr,vars};
@@ -88,7 +92,7 @@ Expr operator- (const Var& v1, const Var& v2){
 
 Expr operator* (const Var& v1, const Var& v2){
 	std::vector<Var> vars{v1};
-	if(&v1 != &v2)
+	if(v1.get_name().compare(v2.get_name()) != 0)
 		vars.push_back(v2);
 	std::string expr = v1.get_name() + " * " + v2.get_name();
 	return Expr{expr,vars};
@@ -129,7 +133,7 @@ Expr operator+ (const Expr& e1, const Var& v1){
 	std::vector<Var> vars{e1.get_variables()};
 	bool already_present = false;
 	for(auto& v : e1.get_variables())
-		if(&v == &v1){
+		if(!v.get_name().compare(v1.get_name())){
 			already_present = true;
 			break;
 		}
@@ -143,7 +147,7 @@ Expr operator+(const Var& v1, const Expr& e1){
 	std::vector<Var> vars{e1.get_variables()};
 	bool already_present = false;
 	for(auto& v : e1.get_variables())
-		if(&v == &v1){
+		if(!v.get_name().compare(v1.get_name())){
 			already_present = true;
 			break;
 		}
@@ -157,7 +161,7 @@ Expr operator- (const Expr& e1, const Var& v1){
 	std::vector<Var> vars{e1.get_variables()};
 	bool already_present = false;
 	for(auto& v : e1.get_variables())
-		if(&v == &v1){
+		if(!v.get_name().compare(v1.get_name())){
 			already_present = true;
 			break;
 		}
@@ -171,7 +175,7 @@ Expr operator-(const Var& v1, const Expr& e1){
 	std::vector<Var> vars{e1.get_variables()};
 	bool already_present = false;
 	for(auto& v : e1.get_variables())
-		if(&v == &v1){
+		if(!v.get_name().compare(v1.get_name())){
 			already_present = true;
 			break;
 		}
@@ -185,7 +189,7 @@ Expr operator* (const Expr& e1, const Var& v1){
 	std::vector<Var> vars{e1.get_variables()};
 	bool already_present = false;
 	for(auto& v : e1.get_variables())
-		if(&v == &v1){
+		if(!v.get_name().compare(v1.get_name())){
 			already_present = true;
 			break;
 		}
@@ -199,7 +203,7 @@ Expr operator*(const Var& v1, const Expr& e1){
 	std::vector<Var> vars{e1.get_variables()};
 	bool already_present = false;
 	for(auto& v : e1.get_variables())
-		if(&v == &v1){
+		if(!v.get_name().compare(v1.get_name())){
 			already_present = true;
 			break;
 		}
@@ -214,7 +218,7 @@ Expr operator+(const Expr& e1, const Expr& e2){
 	for(auto& v2 : e2.get_variables()){
 		bool already_present = false;
 		for(auto& v1 : e1.get_variables())
-			if(&v1 == &v2){
+			if(!v1.get_name().compare(v2.get_name())){
 				already_present = true;
 					break;
 			}
@@ -230,7 +234,7 @@ Expr operator-(const Expr& e1, const Expr& e2){
 	for(auto& v2 : e2.get_variables()){
 		bool already_present = false;
 		for(auto& v1 : e1.get_variables())
-			if(&v1 == &v2){
+			if(!v1.get_name().compare(v2.get_name())){
 				already_present = true;
 					break;
 			}
@@ -246,7 +250,7 @@ Expr operator*(const Expr& e1, const Expr& e2){
 	for(auto& v2 : e2.get_variables()){
 		bool already_present = false;
 		for(auto& v1 : e1.get_variables())
-			if(&v1 == &v2){
+			if(!v1.get_name().compare(v2.get_name())){
 				already_present = true;
 					break;
 			}

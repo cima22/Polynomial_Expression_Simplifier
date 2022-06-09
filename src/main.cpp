@@ -16,20 +16,11 @@ int main(int argc, char* argv[]){
 
 	Var x{"x",2};
 	Var y{"y",3};
-	//Expr ex = x + 3;
-	//std::cout << ex;
-	//std::cout << ex1 + ex2;
-	//std::cout << "x+3 = " << x + 3 << "\n" << "5*y = " << 5*y << "\n" << "x-y = " << x-y << "\n" <<"y*y = " << y * y << std::endl;
-	/*
-	std::vector<Var> vars = (y + x).get_variables();
-	for(auto& v : vars)
-		std::cout << v.get_name() << "\n";
-
-	int a = 2 + 3 * 4;
-	std::cout << a << std::endl;
-	*/
-	Expr ex = (x + 2 + y) * (y * (x - 10));
+	Var z{"z",4};
+		
+	Expr ex{"x + y * 2"};
 	std::cout << ex << std::endl;
+
 	for(auto& v : ex.get_variables())
 		std::cout << v.get_name() << "\n";
 }

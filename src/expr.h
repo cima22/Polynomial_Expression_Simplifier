@@ -19,6 +19,8 @@ class Expr{
 		Expr(const std::string& expr, const std::vector<Var>& vars);
 
 		std::vector<Var> get_variables() const;
+		
+		int evaluate(const std::vector<Var>& v) const;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
 		
