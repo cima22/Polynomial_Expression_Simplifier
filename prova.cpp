@@ -1,39 +1,25 @@
 #include <iostream>
 #include <vector>
+#include <map>
 
 struct Try{
 	int i;
-	Try(int i):i{i}{};
-};
-
-struct Fu{
-	std::vector<Try> vars;
-	Fu(std::vector<Try> arg):vars{arg}{};
-	std::vector<Try> func(){return vars;} 
+	Try(){
+		std::cout << "Default constructor";
+	}
+	Try(int i):i{i}{
+		std::cout << "Custom constructor";
+	}
 };
 
 int main(){
 	
-	Try e1{1};
-	/*
-	Try e2{2};
+	std::map<std::string, int> m {{"ciao",1},{"come",2},{"va",3}};
+	std::cout << m["va"] << std::endl;
 	
-	std::vector<Try> v1{e1,e2};
+	Try t1;
+	Try t2{3};
+	Try t3{};
+	
 
-	Fu f1{v1};
-
-	Try e3{3};
-	v1.push_back(e3);
-
-	for(auto& e : v1)
-		std::cout << e.i << "\n";
-
-	for(auto& e : f1.func())
-		std::cout << e.i << "\n";
-	*/
-	std::vector<Try> v1{e1};
-	e1.i = 2;
-	std::cout << v1[0].i << std::endl;
-	if(1)
-		std::cout << "aaaaaa";
 }

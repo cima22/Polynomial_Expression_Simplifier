@@ -1,14 +1,20 @@
 #include "expr.h"
+#include <string>
 
+//Expr::Expr() = default;
+/*
 Expr::Expr(const std::string& expr):
 	expression{expr},vars{}{
 
-//	extract_vars();
+	extract_vars();
 
 	}
-
+*/
 Expr::Expr(const std::string& expr, const std::vector<Var>& vars):
 	expression{expr},vars{vars}{}
+
+Expr::Expr(const std::string& expr, const std::vector<Var>& vars, const Expr& sub_1, const Expr& sub_2):
+	expression{expr},vars{vars},sub_expression_1{&sub_1},sub_expression_2{&sub_2}{}
 
 void Expr::extract_vars(){
 	
@@ -17,13 +23,11 @@ void Expr::extract_vars(){
 	for(const char c : work){
 		if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z')) // go to next character if 
 				continue;
-		if(std::find(names.begin(),names.end(),c) == names.end()){ // check if it is a new variable
-			std::cout << c << std::endl;
+		if(std::find(names.begin(),names.end(),c) == names.end()) // check if it is a new variable
 			names.push_back(c);
-		}	
 	}
-	for(char name : names)
-		vars.push_back(Var{std::to_string(name)});
+	for(const char name : names)
+		vars.push_back(Var{std::string(1,name)});
 
 }
 
@@ -259,3 +263,4 @@ Expr operator*(const Expr& e1, const Expr& e2){
 	}	
 	return Expr{expr,vars};
 }
+
