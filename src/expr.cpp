@@ -14,7 +14,7 @@ Expr::Expr(const std::string& expr, const std::vector<Var>& vars):
 	expression{expr},vars{vars}{}
 
 Expr::Expr(const std::string& expr, const std::vector<Var>& vars, const Expr& sub_1, const Expr& sub_2):
-	expression{expr},vars{vars},sub_expression_1{&sub_1},sub_expression_2{&sub_2}{}
+	expression{expr},vars{vars},sub_expr_1{&sub_1},sub_expr_2{&sub_2}{}
 
 void Expr::extract_vars(){
 	
@@ -37,6 +37,22 @@ int Expr::evaluate(const std::vector<Var>& v) const{
 
 std::vector<Var> Expr::get_variables() const { return vars; }
 
+const std::string& Expr::to_string() const { return expression; }
+
+Expr Expr::stretch() const{
+	
+	if(t == type::constant || t == type::var)
+		return *this;
+	switch(op){
+		case operation::sum:
+			std::string expr = (*sub_expr_1).stretch().to_string() + " + " + (*sub_expr_2).stretch().to_string(); 
+			return Expr{expr,vars};
+			break;
+	}
+}
+
+//------------------------- From now on, operators definition only ---------------------------------------------------
+
 std::ostream& operator<<(std::ostream& os, const Expr& expr){
 	os << expr.expression;
 	return os;
@@ -45,6 +61,8 @@ std::ostream& operator<<(std::ostream& os, const Expr& expr){
 Expr operator+ (const Var& v, int c){
 	std::vector<Var> vars{v};
 	std::string expr = v.get_name() + " + " + std::to_string(c);
+	Expr sub_1{"x",vars,};
+	Expr sub_2{std::string(1,c)};
 	return Expr{expr,vars};
 }
 
