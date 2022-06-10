@@ -10,16 +10,19 @@ struct Try{
 	Try(int i):i{i}{
 		std::cout << "Custom constructor";
 	}
+	virtual void printa() = 0;
+};
+
+struct Try_child : public Try{
+
+	void printa() override {
+		std::cout << "ciao";
+	}
 };
 
 int main(){
 	
-	std::map<std::string, int> m {{"ciao",1},{"come",2},{"va",3}};
-	std::cout << m["va"] << std::endl;
+	Try* t = new Try_child{};
+	t->printa();
 	
-	Try t1;
-	Try t2{3};
-	Try t3{};
-	
-
 }

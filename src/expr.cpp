@@ -61,8 +61,6 @@ std::ostream& operator<<(std::ostream& os, const Expr& expr){
 Expr operator+ (const Var& v, int c){
 	std::vector<Var> vars{v};
 	std::string expr = v.get_name() + " + " + std::to_string(c);
-	Expr sub_1{"x",vars,};
-	Expr sub_2{std::string(1,c)};
 	return Expr{expr,vars};
 }
 

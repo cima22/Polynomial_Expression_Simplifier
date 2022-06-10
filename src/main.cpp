@@ -9,6 +9,6 @@ int main(int argc, char* argv[]){
 	Var y{"y",3};
 	Var z{"z",4};
 		
-	Expr ex = x + y + z;
-	std::cout << ex << "\n" << ex.stretch() << std::endl;
+	Expr ex = (x + y) * (z + 2);
+	std::cout << ex << std::endl;
 }
