@@ -6,24 +6,17 @@
 #include <algorithm>
 #include "var.h"
 
-enum class operation {sum, sub, mul};
-enum class type {compound_expr, var, constant};
-
 class Expr{
 	
 	private:
 		std::string expression; 	// string format of the expression
 		std::vector<Var> vars;  	// vector of variables
-		const Expr* sub_expr_1; 	// first sub-expression 
-		const Expr* sub_expr_2; 	// second sub-expression
-		operation op; 			// operation between the two sub-expressions
-		type t;				// which type of expression this is	
 
 		void extract_vars();
 
 	public:
 		//Expr();
-		//Expr(const std::string& expr);
+		Expr(const std::string& expr);
 		Expr(const std::string& expr, const std::vector<Var>& vars);
 		Expr(const std::string& expr, const std::vector<Var>& vars, const Expr& sub_1, const Expr& sub_2);
 
@@ -32,8 +25,6 @@ class Expr{
 
 
 		int evaluate(const std::vector<Var>& v) const;
-
-		Expr stretch() const;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
 		
