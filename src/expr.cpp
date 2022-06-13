@@ -1,7 +1,7 @@
 #include "expr.h"
 #include <string>
 
-//Expr::Expr() = default;
+Expr::Expr() = default;
 
 Expr::Expr(const std::string& expr):
 	expression{expr},vars{}{
@@ -28,16 +28,12 @@ void Expr::extract_vars(){
 
 }
 
-int Expr::evaluate(const std::vector<Var>& v) const{
-	return 0;
-}
-
 std::vector<Var> Expr::get_variables() const { return vars; }
 
 const std::string& Expr::to_string() const { return expression; }
 
 //------------------------- From now on, operators definition only ---------------------------------------------------
-
+/*
 std::ostream& operator<<(std::ostream& os, const Expr& expr){
 	os << expr.expression;
 	return os;
@@ -263,5 +259,5 @@ Expr operator*(const Expr& e1, const Expr& e2){
 			vars.push_back(v2);
 	}	
 	return Expr{expr,vars};
-}
+}*/
 

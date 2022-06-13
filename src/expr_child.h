@@ -1,0 +1,32 @@
+#include "expr.h"
+#include <string>
+
+class VarExpr : public Expr{
+	public:
+		VarExpr(const Var& v);
+		void set_value(int v);
+		int evaluate() override;
+};
+
+class ConstExpr : public Expr{
+	private:
+		int value;
+	public:
+		ConstExpr(const int i);
+		int evaluate() override;
+};
+
+enum class operation {sum, sub, mul};
+
+class CompExpr : public Expr{
+	private:
+		Expr& sub_1;
+		Expr& sub_2;
+		operation op;
+
+		std::string create_string(Expr& e1, Expr& e2, operation op);
+
+	public:
+		CompExpr(Expr& e1, Expr& e2, operation op);
+		int evaluate() override;
+};
