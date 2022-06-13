@@ -25,40 +25,6 @@ class Expr{
 		virtual int evaluate() = 0;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
-/*	
-		friend Expr operator+(const Expr& e1, const Expr& e2);
-		friend Expr operator-(const Expr& e1, const Expr& e2);
-		friend Expr operator*(const Expr& e1, const Expr& e2);
-
-		friend Expr operator+(const Expr& e1, int i);
-		friend Expr operator+(int i, const Expr& e1);
-
-		friend Expr operator-(const Expr& e1, int i);
-		friend Expr operator-(int i, const Expr& e1);
-		
-		friend Expr operator*(const Expr& e1, int i);
-		friend Expr operator*(int i, const Expr& e1);
-
-		friend Expr operator+(const Expr& e1, const Var& v1);
-		friend Expr operator+(const Var& v1, const Expr& e1);
-
-		friend Expr operator-(const Expr& e1, const Var& v1);
-		friend Expr operator-(const Var& v1, const Expr& e1);
-
-		friend Expr operator*(const Expr& e1, const Var& v1);
-		friend Expr operator*(const Var& v1, const Expr& e1);
-*/
 };
-/*
-Expr operator+ (const Var& v, int c);
-Expr operator+ (int c, const Var& v);
-Expr operator- (const Var& v, int c);
-Expr operator- (int c, const Var& v);
-Expr operator* (const Var& v, int c);
-Expr operator* (int c, const Var& v);
 
-Expr operator+ (const Var& v1, const Var& v2);
-Expr operator- (const Var& v1, const Var& v2);
-Expr operator* (const Var& v1, const Var& v2);
-*/
 #endif
