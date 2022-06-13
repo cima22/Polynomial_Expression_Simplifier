@@ -11,5 +11,8 @@ int main(int argc, char* argv[]){
 	Var z{"z",4};
 	
 	Expr& ex = x + 2;
-	std::cout << ex.to_string() << std::endl;
+	Expr& ex2 = 2 * y;
+	Expr& ex3 = 10 - z;
+	Expr& ex4 = x * z;
+	std::cout << ex << "\n" << ex2 << "\n" << ex3 << "\n" << ex4 << std::endl;
 }

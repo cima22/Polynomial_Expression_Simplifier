@@ -23,9 +23,9 @@ class Expr{
 		const std::string& to_string() const;
 
 		virtual int evaluate() = 0;
-/*
+
 		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
-		
+/*	
 		friend Expr operator+(const Expr& e1, const Expr& e2);
 		friend Expr operator-(const Expr& e1, const Expr& e2);
 		friend Expr operator*(const Expr& e1, const Expr& e2);

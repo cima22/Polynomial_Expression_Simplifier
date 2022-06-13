@@ -88,15 +88,15 @@ CompExpr& operator* (int c, const Var& v){
 CompExpr& operator+ (const Var& v1, const Var& v2){
 	VarExpr v_e_1{v1};
 	VarExpr v_e_2{v2};
-	return * new ComprExpr{v_e_1,v_e_2,operation::sum};
+	return * new CompExpr{v_e_1,v_e_2,operation::sum};
 }
 CompExpr& operator- (const Var& v1, const Var& v2){
 	VarExpr v_e_1{v1};
 	VarExpr v_e_2{v2};
-	return * new ComprExpr{v_e_1,v_e_2,operation::sub};
+	return * new CompExpr{v_e_1,v_e_2,operation::sub};
 }
 CompExpr& operator* (const Var& v1, const Var& v2){
 	VarExpr v_e_1{v1};
 	VarExpr v_e_2{v2};
-	return * new ComprExpr{v_e_1,v_e_2,operation::sub};
+	return * new CompExpr{v_e_1,v_e_2,operation::sub};
 }

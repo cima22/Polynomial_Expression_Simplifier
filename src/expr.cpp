@@ -33,12 +33,12 @@ std::vector<Var> Expr::get_variables() const { return vars; }
 const std::string& Expr::to_string() const { return expression; }
 
 //------------------------- From now on, operators definition only ---------------------------------------------------
-/*
+
 std::ostream& operator<<(std::ostream& os, const Expr& expr){
 	os << expr.expression;
 	return os;
 }
-
+/*
 Expr operator+ (const Var& v, int c){
 	std::vector<Var> vars{v};
 	std::string expr = v.get_name() + " + " + std::to_string(c);
