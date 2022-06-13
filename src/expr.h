@@ -23,6 +23,7 @@ class Expr{
 		const std::string& to_string() const;
 
 		virtual int evaluate() = 0;
+		virtual std::string stretch() = 0;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
 };

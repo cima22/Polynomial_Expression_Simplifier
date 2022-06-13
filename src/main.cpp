@@ -11,6 +11,6 @@ int main(int argc, char* argv[]){
 	Var z{"z",4};
 	
 	Expr& ex = x + 1 + 2;
-	Expr& ex1 = 2 * (y + z);
-	std::cout << ex << "\n" << ex1 << std::endl;
+	std::cout << "Expr: " << ex << "\nStretch: " << ex.stretch() << std::endl;
+
 }
