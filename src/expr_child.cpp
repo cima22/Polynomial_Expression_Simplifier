@@ -59,50 +59,44 @@ CompExpr& operator+ (const Var& v, int c){
 	ConstExpr c_e{c};
 	return * new CompExpr{v_e,c_e,operation::sum};
 }
-/*
+
 Expr operator+ (int c, const Var& v){
-	std::vector<Var> vars{v};
-	std::string expr = std::to_string(c) + " + " +  v.get_name();
-	return Expr{expr,vars};
+	VarExpr v_e{v};
+	ConstExpr c_e{c};
+	return * new CompExpr{c_e,v_e,operation::sum};
 }
 Expr operator- (const Var& v, int c){
-	std::vector<Var> vars{v};
-	std::string expr = v.get_name() + " - " + std::to_string(c);
-	return Expr{expr,vars};
+	VarExpr v_e{v};
+	ConstExpr c_e{c};
+	return * new CompExpr{v_e,c_e,operation::sub};
 }
 Expr operator- (int c, const Var& v){
-	std::vector<Var> vars{v};
-	std::string expr = std::to_string(c) + " - " + v.get_name();
-	return Expr{expr,vars};
+	VarExpr v_e{v};
+	ConstExpr c_e{c};
+	return * new CompExpr{c_e,v_e,operation::sub};
 }
 Expr operator* (const Var& v, int c){
-	std::vector<Var> vars{v};
-	std::string expr = v.get_name() + " * " + std::to_string(c);
-	return Expr{expr,vars};
+	VarExpr v_e{v};
+	ConstExpr c_e{c};
+	return * new CompExpr{v_e,c_e,operation::mul};
 }
 Expr operator* (int c, const Var& v){
-	std::vector<Var> vars{v};
-	std::string expr = std::to_string(c) + " * " + v.get_name();
-	return Expr{expr,vars};
+	VarExpr v_e{v};
+	ConstExpr c_e{c};
+	return * new CompExpr{c_e,v_e,operation::mul};
 }
 Expr operator+ (const Var& v1, const Var& v2){
-	std::vector<Var> vars{v1};
-	if(v1.get_name().compare(v2.get_name()) != 0)
-		vars.push_back(v2);
-	std::string expr = v1.get_name() + " + " + v2.get_name();
-	return Expr{expr,vars};
+	VarExpr v_e_1{v1};
+	VarExpr v_e_2{v2};
+	return * new ComprExpr{v_e_1,v_e_2,operation::sum};
 }
 Expr operator- (const Var& v1, const Var& v2){
-	std::vector<Var> vars{v1};
-	if(v1.get_name().compare(v2.get_name()) != 0)
-		vars.push_back(v2);
-	std::string expr = v1.get_name() + " - " + v2.get_name();
-	return Expr{expr,vars};
+	VarExpr v_e_1{v1};
+	VarExpr v_e_2{v2};
+	return * new ComprExpr{v_e_1,v_e_2,operation::sub};
 }
 Expr operator* (const Var& v1, const Var& v2){
-	std::vector<Var> vars{v1};
-	if(v1.get_name().compare(v2.get_name()) != 0)
-		vars.push_back(v2);
-	std::string expr = v1.get_name() + " * " + v2.get_name();
-	return Expr{expr,vars};
-}*/
+	VarExpr v_e_1{v1};
+	VarExpr v_e_2{v2};
+	return * new ComprExpr{v_e_1,v_e_2,operation::sub};
+}
