@@ -31,7 +31,7 @@ class CompExpr : public Expr{
 		int evaluate() override;
 };
 
-CompExpr operator+ (const Var& v, int c);
+CompExpr& operator+ (const Var& v, int c);
 CompExpr operator+ (int c, const Var& v);
 CompExpr operator- (const Var& v, int c);
 CompExpr operator- (int c, const Var& v);

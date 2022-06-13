@@ -10,12 +10,6 @@ int main(int argc, char* argv[]){
 	Var y{"y",3};
 	Var z{"z",4};
 	
-	VarExpr vx{x};
-	VarExpr vy{y};
-	CompExpr ex{vx,vy,operation::sum};
-
-	std::cout << ex.to_string() << "\n" << std::endl;
-
-	for(auto&v : ex.get_variables())
-		std::cout << v.get_name() << "\n";
+	Expr& ex = x + 2;
+	std::cout << ex.to_string() << std::endl;
 }

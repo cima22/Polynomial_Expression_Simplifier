@@ -47,48 +47,19 @@ std::string CompExpr::create_string(Expr& e1, Expr& e2, const operation op){
 }
 
 CompExpr::CompExpr(Expr& e1, Expr& e2, const operation op):
-	sub_1{e1},sub_2{e2},op{op},Expr(create_string(e1,e2,op)){
-/*	char op_c;
-	switch(op){
-		case operation::sum:
-			op_c = '+';
-			break;
-		case operation::sub:
-			op_c = '-';
-			break;
-		case operation::mul:
-			op_c = '*';
-			break;
-		default:
-			op_c = '?';
-			break;
-	}
-	this->expression = "(" + e1.to_string() + ") " + op_c + " (" + e2.to_string() + ")";
-	this->sub_1 = e1;
-	this->sub_2 = e2;
-	this->op = op
-	this->vars{e1.get_variables()};
-	for(auto& v1 : e1.get_variables()){
-		bool already_present = false;
-		for(auto& v2 : e2.get_variables()):
-			if(v1.get_name().compare(v2.get_name()) == 0){
-				already_present = true;
-				break;
-			}
-		if(!already_present)
-			this->vars.push_back(v2);
-	}*/
-}
+	sub_1{e1}, sub_2{e2}, op{op}, Expr(create_string(e1,e2,op))
+	{}
 
 int CompExpr::evaluate(){
 	return 0;
 }
 
-CompExpr operator+ (const Var& v, int c){
+CompExpr& operator+ (const Var& v, int c){
 	VarExpr v_e{v};
 	ConstExpr c_e{c};
-	return CompExpr{v_e,c_e,operation::sum};
+	return * new CompExpr{v_e,c_e,operation::sum};
 }
+/*
 Expr operator+ (int c, const Var& v){
 	std::vector<Var> vars{v};
 	std::string expr = std::to_string(c) + " + " +  v.get_name();
@@ -134,4 +105,4 @@ Expr operator* (const Var& v1, const Var& v2){
 		vars.push_back(v2);
 	std::string expr = v1.get_name() + " * " + v2.get_name();
 	return Expr{expr,vars};
-}
+}*/
