@@ -29,6 +29,28 @@ class CompExpr : public Expr{
 	public:
 		CompExpr(Expr& e1, Expr& e2, operation op);
 		int evaluate() override;
+	
+		friend CompExpr& operator+(const CompExpr& e1, const CompExpr& e2);
+		friend CompExpr& operator-(const CompExpr& e1, const CompExpr& e2);
+		friend CompExpr& operator*(const CompExpr& e1, const CompExpr& e2);
+
+		friend CompExpr& operator+(const CompExpr& e1, int i);
+		friend CompExpr& operator+(int i, const CompExpr& e1);
+
+		friend CompExpr& operator-(const CompExpr& e1, int i);
+		friend CompExpr& operator-(int i, const CompExpr& e1);
+		
+		friend CompExpr& operator*(const CompExpr& e1, int i);
+		friend CompExpr& operator*(int i, const CompExpr& e1);
+
+		friend CompExpr& operator+(const CompExpr& e1, const Var& v1);
+		friend CompExpr& operator+(const Var& v1, const CompExpr& e1);
+
+		friend CompExpr& operator-(const CompExpr& e1, const Var& v1);
+		friend CompExpr& operator-(const Var& v1, const CompExpr& e1);
+
+		friend CompExpr& operator*(const CompExpr& e1, const Var& v1);
+		friend CompExpr& operator*(const Var& v1, const CompExpr& e1);
 };
 
 CompExpr& operator+ (const Var& v, int c);
