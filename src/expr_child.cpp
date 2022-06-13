@@ -163,7 +163,8 @@ CompExpr& operator-(const Var& v, const CompExpr& e1){
 
 CompExpr& operator* (const CompExpr& e1, const Var& v){
 	VarExpr v_e{v};
-	return * new CompExpr{e1,v_e,operation::mul};
+	CompExpr e = e1;
+	return * new CompExpr{e,v_e,operation::mul};
 }
 
 CompExpr& operator*(const Var& v, const CompExpr& e1){
