@@ -60,42 +60,42 @@ CompExpr& operator+ (const Var& v, int c){
 	return * new CompExpr{v_e,c_e,operation::sum};
 }
 
-Expr operator+ (int c, const Var& v){
+CompExpr& operator+ (int c, const Var& v){
 	VarExpr v_e{v};
 	ConstExpr c_e{c};
 	return * new CompExpr{c_e,v_e,operation::sum};
 }
-Expr operator- (const Var& v, int c){
+CompExpr& operator- (const Var& v, int c){
 	VarExpr v_e{v};
 	ConstExpr c_e{c};
 	return * new CompExpr{v_e,c_e,operation::sub};
 }
-Expr operator- (int c, const Var& v){
+CompExpr& operator- (int c, const Var& v){
 	VarExpr v_e{v};
 	ConstExpr c_e{c};
 	return * new CompExpr{c_e,v_e,operation::sub};
 }
-Expr operator* (const Var& v, int c){
+CompExpr& operator* (const Var& v, int c){
 	VarExpr v_e{v};
 	ConstExpr c_e{c};
 	return * new CompExpr{v_e,c_e,operation::mul};
 }
-Expr operator* (int c, const Var& v){
+CompExpr& operator* (int c, const Var& v){
 	VarExpr v_e{v};
 	ConstExpr c_e{c};
 	return * new CompExpr{c_e,v_e,operation::mul};
 }
-Expr operator+ (const Var& v1, const Var& v2){
+CompExpr& operator+ (const Var& v1, const Var& v2){
 	VarExpr v_e_1{v1};
 	VarExpr v_e_2{v2};
 	return * new ComprExpr{v_e_1,v_e_2,operation::sum};
 }
-Expr operator- (const Var& v1, const Var& v2){
+CompExpr& operator- (const Var& v1, const Var& v2){
 	VarExpr v_e_1{v1};
 	VarExpr v_e_2{v2};
 	return * new ComprExpr{v_e_1,v_e_2,operation::sub};
 }
-Expr operator* (const Var& v1, const Var& v2){
+CompExpr& operator* (const Var& v1, const Var& v2){
 	VarExpr v_e_1{v1};
 	VarExpr v_e_2{v2};
 	return * new ComprExpr{v_e_1,v_e_2,operation::sub};
