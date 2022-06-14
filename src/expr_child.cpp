@@ -158,10 +158,9 @@ CompExpr& operator*(int i, CompExpr& e1){
 	return * new CompExpr{*c_e,e1,operation::mul};
 }
 
-CompExpr& operator+ (CompExpr& e1, const Var& v){
+CompExpr& operator+ (const CompExpr& e1, const Var& v){
 	VarExpr* v_e = new VarExpr{v};
-	CompExpr* e  = new CompExpr{e1};
-	return * new CompExpr{*e,*v_e,operation::sum};
+	return * new CompExpr{e1,*v_e,operation::sum};
 }
 
 CompExpr& operator+(const Var& v, const CompExpr& e1){
