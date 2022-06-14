@@ -7,6 +7,7 @@ class VarExpr : public Expr{ // Expression which is composed only by one variabl
 		void set_value(int v);
 		int evaluate() override;
 		VarExpr& stretch() override;
+		VarExpr& distr_law() override;
 };
 
 class ConstExpr : public Expr{ // Expression which is composed only by one constant, e.g.: 2
@@ -16,6 +17,7 @@ class ConstExpr : public Expr{ // Expression which is composed only by one const
 		ConstExpr(const int i);
 		int evaluate() override;
 		ConstExpr& stretch() override;
+		ConstExpr& distr_law() override;
 };
 
 enum class operation {sum, sub, mul};
@@ -27,34 +29,42 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		operation op;
 
 		std::string create_string(Expr& e1, Expr& e2, operation op);
+		bool is_CompExpr(Expr& ex);
+	//	CompExpr& distr_law();
 
 	public:
 		CompExpr(Expr& e1, Expr& e2, operation op);
+		CompExpr(const std::string& expr, const std::vector<Var>& vars, Expr& e1, Expr& e2, operation op);
 		
 		int evaluate() override;
 		CompExpr& stretch() override;
+		operation get_op();
+		Expr& get_sub_1();
+		Expr& get_sub_2();
 	
+		CompExpr& distr_law() override;
+
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator* (const CompExpr& e1, const CompExpr& e2);
 
-		friend CompExpr& operator+ (const CompExpr& e1, int i);
-		friend CompExpr& operator+ (int i, const CompExpr& e1);
+		friend CompExpr& operator+ (CompExpr& e1, int i);
+		friend CompExpr& operator+ (int i, CompExpr& e1);
 
-		friend CompExpr& operator- (const CompExpr& e1, int i);
-		friend CompExpr& operator- (int i, const CompExpr& e1);
+		friend CompExpr& operator- (CompExpr& e1, int i);
+		friend CompExpr& operator- (int i, CompExpr& e1);
 		
-		friend CompExpr& operator* (const CompExpr& e1, int i);
-		friend CompExpr& operator* (int i, const CompExpr& e1);
+		friend CompExpr& operator* (CompExpr& e1, int i);
+		friend CompExpr& operator* (int i, CompExpr& e1);
 
-		friend CompExpr& operator+ (const CompExpr& e1, const Var& v1);
-		friend CompExpr& operator+ (const Var& v1, const CompExpr& e1);
+		friend CompExpr& operator+ (CompExpr& e1, const Var& v1);
+		friend CompExpr& operator+ (const Var& v1, CompExpr& e1);
 
-		friend CompExpr& operator- (const CompExpr& e1, const Var& v1);
-		friend CompExpr& operator- (const Var& v1, const CompExpr& e1);
+		friend CompExpr& operator- (CompExpr& e1, const Var& v1);
+		friend CompExpr& operator- (const Var& v1, CompExpr& e1);
 
-		friend CompExpr& operator* (const CompExpr& e1, const Var& v1);
-		friend CompExpr& operator* (const Var& v1, const CompExpr& e1);
+		friend CompExpr& operator* (CompExpr& e1, const Var& v1);
+		friend CompExpr& operator* (const Var& v1, CompExpr& e1);
 };
 
 CompExpr& operator+ (const Var& v, int c);
