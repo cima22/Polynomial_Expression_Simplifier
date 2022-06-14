@@ -6,7 +6,7 @@ class VarExpr : public Expr{ // Expression which is composed only by one variabl
 		VarExpr(const Var& v);
 		void set_value(int v);
 		int evaluate() override;
-		std::string stretch() override;
+		VarExpr& stretch() override;
 };
 
 class ConstExpr : public Expr{ // Expression which is composed only by one constant, e.g.: 2
@@ -15,7 +15,7 @@ class ConstExpr : public Expr{ // Expression which is composed only by one const
 	public:
 		ConstExpr(const int i);
 		int evaluate() override;
-		std::string stretch() override;
+		ConstExpr& stretch() override;
 };
 
 enum class operation {sum, sub, mul};
@@ -32,7 +32,7 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		CompExpr(Expr& e1, Expr& e2, operation op);
 		
 		int evaluate() override;
-		std::string stretch() override;
+		CompExpr& stretch() override;
 	
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);

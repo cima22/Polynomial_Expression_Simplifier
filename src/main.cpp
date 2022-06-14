@@ -10,7 +10,8 @@ int main(int argc, char* argv[]){
 	Var y{"y",3};
 	Var z{"z",4};
 	
-	Expr& ex = x + 1 + 2;
-	std::cout << "Expr: " << ex << "\nStretch: " << ex.stretch() << std::endl;
+	Expr& ex = x + 2 + 3;
+	std::cout << ex;
+	//std::cout << "Expr: " << ex << "\nStretch: " << ex.stretch() << std::endl;
 
 }

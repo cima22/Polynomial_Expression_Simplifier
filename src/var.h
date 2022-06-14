@@ -13,7 +13,7 @@ class Var{
 		Var(const std::string& name, const float value);
 		Var(const std::string& name);
 		
-		std::string&       get_name();
+		std::string       get_name();
 		const std::string& get_name() const;
 		void               set_name(const std::string& new_name);
 		float              get_value();

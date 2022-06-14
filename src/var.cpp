@@ -8,7 +8,7 @@ Var::Var(const std::string& name):
 	name{name}
 	{}
 
-std::string&       Var::get_name(){ return name; }
+std::string       Var::get_name(){ return name; }
 const std::string& Var::get_name() const {return name;}
 void               Var::set_name(const std::string& new_name){ name = new_name; };
 
