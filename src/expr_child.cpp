@@ -158,7 +158,7 @@ CompExpr& operator*(int i, const CompExpr& e1){
 }
 
 CompExpr& operator+ (const CompExpr& e1, const Var& v){
-	VarExpr* c_e = new VarExpr{v};
+	VarExpr* v_e = new VarExpr{v};
 	CompExpr* e  = new CompExpr{e1};
 	return * new CompExpr{*e,*v_e,operation::sum};
 }
