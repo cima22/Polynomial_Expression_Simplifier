@@ -20,6 +20,10 @@ VarExpr& VarExpr::distr_law(){
 	return *this;
 }
 
+VarExpr& VarExpr::mult(){
+	return *this;
+}
+
 ConstExpr::ConstExpr(const int i):
 	value{i},Expr(std::to_string(i)){}
 
@@ -34,6 +38,10 @@ ConstExpr& ConstExpr::stretch(){
 ConstExpr& ConstExpr::distr_law(){
 	return *this;
 } 
+
+ConstExpr& ConstExpr::mult(){
+	return *this;
+}
 
 std::string CompExpr::create_string(Expr& e1, Expr& e2, const operation op){
 	char op_c;
@@ -78,10 +86,10 @@ Expr& CompExpr::get_sub_1(){ return sub_1; }
 Expr& CompExpr::get_sub_2(){ return sub_2; }
 
 CompExpr& CompExpr::distr_law(){
-	if(op != operation::mul){
+	if(op != operation::mul){/*
 		Expr& new_sub_1 = sub_1.distr_law();
-		Expr& new_sub_2 = sub_2.distr_law();
-		return * new CompExpr{new_sub_1,new_sub_2,op};
+		Expr& new_sub_2 = sub_2.distr_law();*/
+		return * new CompExpr{sub_1,sub_2,op};
 	}
 
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
@@ -91,18 +99,45 @@ CompExpr& CompExpr::distr_law(){
 
 	CompExpr& comp_sub = is_comp_expr_1 ? dynamic_cast<CompExpr&>(sub_1) : dynamic_cast<CompExpr&>(sub_2);
 	Expr& sub = is_comp_expr_1 ? sub_2 : sub_1;
-	CompExpr& new_comp_sub = comp_sub.distr_law();
-	Expr& mem1 = * new CompExpr{sub,new_comp_sub.get_sub_1(),operation::mul};
-	Expr& mem2 = * new CompExpr{sub,new_comp_sub.get_sub_2(),operation::mul};
+	//CompExpr& new_comp_sub = comp_sub.distr_law();
+	Expr& mem1 = * new CompExpr{sub,comp_sub.get_sub_1(),operation::mul};
+	Expr& mem2 = * new CompExpr{sub,comp_sub.get_sub_2(),operation::mul};
 	return * new CompExpr{mem1,mem2,comp_sub.get_op()};
 }
-/*
-CompExpr& CompExpr::apply_distr_law(){
+
+CompExpr& CompExpr::mult(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	bool is_comp_expr_2 = is_CompExpr(sub_2);
+	
+	if(!is_comp_expr_1 && !is_comp_expr_2)
+		return * new CompExpr{sub_1,sub_2,op};
 
+	if(is_comp_expr_1 != is_comp_expr_2)
+		return this->distr_law();
+	
+	CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
+	operation op_sub_1 = comp_sub_1.get_op();
+	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
+	operation op_sub_2 = comp_sub_2.get_op();
+
+	switch(op_sub_1){
+		case operation::sum:{
+					if(op_sub_2 == operation::sum){
+					    CompExpr& new_sub_1_1 = * new CompExpr{comp_sub_1.get_sub_1(),comp_sub_2.get_sub_1(),operation::mul};
+					    CompExpr& new_sub_1_2 = * new CompExpr{comp_sub_1.get_sub_1(),comp_sub_2.get_sub_2(),operation::mul};
+					    CompExpr& new_sub_1 = * new CompExpr{new_sub_1_1,new_sub_1_2,operation::sum};
+					    CompExpr& new_sub_2_1 = * new CompExpr{comp_sub_1.get_sub_1(),comp_sub_2.get_sub_1(),operation::mul};
+					    CompExpr& new_sub_2_2 = * new CompExpr{comp_sub_1.get_sub_2(),comp_sub_2.get_sub_2(),operation::mul};
+					    CompExpr& new_sub_2 = * new CompExpr(new_sub_2_1,new_sub_2_2,operation::sum);
+					    return * new CompExpr{new_sub_1,new_sub_2,operation::sum};
+
+				   }
+				
+					
+					}
 }
-*/
+}
+
 CompExpr& CompExpr::stretch(){
 		switch(op){
 			case operation::sum:{
@@ -123,13 +158,13 @@ CompExpr& CompExpr::stretch(){
 					}
 					break;*/
 					}
-			case operation::mul:{/*
-					if(!is_CompExpr(sub1) && !is_CompExpr(sub2))
+			case operation::mul:{
+					if(!is_CompExpr(sub_1) && !is_CompExpr(sub_2))
 						return *this;
-					if(!is_CompExpr(sub2) && is_CompExpr(sub2)){
-					*/	
+					if(is_CompExpr(sub_2) && is_CompExpr(sub_2)){
+						return *this;
 					}
-
+					}
 			default:
 				return *this;
 				break;

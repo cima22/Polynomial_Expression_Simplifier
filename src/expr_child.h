@@ -8,6 +8,7 @@ class VarExpr : public Expr{ // Expression which is composed only by one variabl
 		int evaluate() override;
 		VarExpr& stretch() override;
 		VarExpr& distr_law() override;
+		VarExpr& mult() override;
 };
 
 class ConstExpr : public Expr{ // Expression which is composed only by one constant, e.g.: 2
@@ -18,6 +19,7 @@ class ConstExpr : public Expr{ // Expression which is composed only by one const
 		int evaluate() override;
 		ConstExpr& stretch() override;
 		ConstExpr& distr_law() override;
+		ConstExpr& mult() override;
 };
 
 enum class operation {sum, sub, mul};
@@ -43,6 +45,7 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		Expr& get_sub_2();
 	
 		CompExpr& distr_law() override;
+		CompExpr& mult() override;
 
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
