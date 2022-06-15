@@ -24,8 +24,6 @@ class Expr{
 
 		virtual int evaluate() = 0;
 		virtual Expr& stretch() = 0;
-		virtual Expr& distr_law() = 0;
-		virtual Expr& mult() = 0;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
 };
