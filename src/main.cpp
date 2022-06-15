@@ -10,11 +10,13 @@ int main(int argc, char* argv[]){
 	Var y{"y",3};
 	Var z{"z",4};
 	
-	Expr& ex = (x + z) * (y * 2);
-	//Expr& ex2 = (x + y) * 3;
-	CompExpr& ex1 = dynamic_cast<CompExpr&>(ex);
-	//CompExpr& ex3= dynamic_cast<CompExpr&>(ex2);
-	std::cout << ex << " = " << ex1.mult(); //<< "\n" << ex2 << " = " << ex3.distr_law().stretch() << std::endl;
+	Expr& ex = (x + y) * (z * 2);//(x + 2) * (y * z) + 2 * z;
+	std::cout << ex << " = " << ex.stretch() << std::endl;
+
+	for(auto&v : ex.stretch().get_variables()){
+		std::cout << v.get_name() << "\n";
+	}
+	
 
 	//std::cout << "Expr: " << ex << "\nStretch: " << ex.stretch() << std::endl;
 

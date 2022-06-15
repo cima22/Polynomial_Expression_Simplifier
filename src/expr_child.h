@@ -31,6 +31,7 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 
 	public:
 		CompExpr(Expr& e1, Expr& e2, operation op);
+		CompExpr(const std::string& expr, Expr& e1, Expr& e2, operation op);
 		CompExpr(const std::string& expr, const std::vector<Var>& vars, Expr& e1, Expr& e2, operation op);
 		
 		int evaluate() override;
