@@ -28,6 +28,19 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 
 		std::string create_string(Expr& e1, Expr& e2, operation op);
 		bool is_CompExpr(Expr& ex);
+		
+		CompExpr& sum_simple_comp();
+		CompExpr& mult_simple_comp();
+		CompExpr& distr_law();
+		CompExpr& compound_sum();
+		CompExpr& sum_sum();
+		CompExpr& sum_mult();
+		CompExpr& sum_mixed();
+		CompExpr& compound_mult();
+		CompExpr& mult_sum();
+		CompExpr& mult_mult();
+		CompExpr& mult_mixed();
+
 
 	public:
 		CompExpr(Expr& e1, Expr& e2, operation op);
@@ -40,9 +53,7 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		Expr& get_sub_1();
 		Expr& get_sub_2();
 		
-		CompExpr& sum();
-		CompExpr& distr_law();
-		CompExpr& mult();
+		CompExpr& compute_operation();
 
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
