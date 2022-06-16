@@ -21,6 +21,10 @@ VarExpr& VarExpr::extend(){
 	return *this;
 }
 
+bool VarExpr::is_extended(){
+	return true;
+}
+
 ConstExpr::ConstExpr(const int i):
 	value{i},Expr(std::to_string(i)){}
 
@@ -34,6 +38,10 @@ ConstExpr& ConstExpr::stretch(){
 
 ConstExpr& ConstExpr::extend(){
 	return *this;
+}
+
+bool ConstExpr::is_extended(){
+	return true;
 }
 
 std::string CompExpr::create_string(Expr& e1, Expr& e2, const operation op){
@@ -262,17 +270,17 @@ CompExpr& CompExpr::mult_mult(){
 CompExpr& CompExpr::mult_mixed(){
 	CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
 	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
-	bool is_first_sum = comp_sub_1.get_op() == operation::sum;
+	bool is_first_sum    = comp_sub_1.get_op() == operation::sum;
 
-	Expr& new_sub_1_1 = is_first_sum ? comp_sub_1.get_sub_1() : comp_sub_2.get_sub_1();
-	Expr& new_sub_1_2 = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
-	CompExpr& new_mem_2    = is_first_sum ? comp_sub_2 : comp_sub_1;
+	Expr& new_sub_1_1    = is_first_sum ? comp_sub_1.get_sub_1() : comp_sub_2.get_sub_1();
+	Expr& new_sub_1_2    = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
+	CompExpr& new_mem_2  = is_first_sum ? comp_sub_2 : comp_sub_1;
 
-	std::string str_1_1 = new_sub_1_1.to_string() + " * " + new_mem_2.to_string();
-	Expr& new_sub_1 = * new CompExpr{str_1_1,new_sub_1_1,new_mem_2,operation::mul};
+	std::string str_1_1  = new_sub_1_1.to_string() + " * " + new_mem_2.to_string();
+	Expr& new_sub_1      = * new CompExpr{str_1_1,new_sub_1_1,new_mem_2,operation::mul};
 
-	std::string str_1_2 = new_sub_1_2.to_string() + " * " + new_mem_2.to_string();
-	Expr& new_sub_2 = * new CompExpr{str_1_2,new_sub_1_2,new_mem_2,operation::mul};
+	std::string str_1_2  = new_sub_1_2.to_string() + " * " + new_mem_2.to_string();
+	Expr& new_sub_2      = * new CompExpr{str_1_2,new_sub_1_2,new_mem_2,operation::mul};
 
 	std::string str = str_1_1 + " + " + str_1_2;
 	return * new CompExpr{str,new_sub_1,new_sub_2,operation::sum};
@@ -305,14 +313,14 @@ CompExpr& CompExpr::extend(){
 		return *this;
 	return stretch().extend();
 }
-
+/*
 bool CompExpr::is_extended(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	bool is_comp_expr_2 = is_CompExpr(sub_2);
 
 	if(!is_comp_expr_1 && !is_comp_expr_2)
 		return true;
-	if(is_comp_expr_1 && !is_comp_expr_2)
+	if(!is_comp_expr_1 && is_comp_expr_2)
 		return false;
 	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
 	switch(op){
@@ -332,6 +340,22 @@ bool CompExpr::is_extended(){
 			}
 		default:
 			return false;
+	}
+}
+*/
+
+bool CompExpr::is_extendible(){
+	bool is_comp_expr_1 = is_CompExpr(sub_1);
+	bool is_comp_expr_2 = is_CompExpr(sub_2);
+
+	if(!is_comp_expr_1 && !is_comp_expr_2)
+		return true;
+	if(is_comp_expr_1 != !is_comp_expr_2){
+		CompExpr& comp_sub = is_comp_expr_1 ? dynamic_cast<CompExpr&>(sub_1) : dynamic_cast<CompExpr&>(sub_2);
+		switch(op){
+			case operation::sum:
+				// QUAAAAA
+		}
 	}
 }
 
