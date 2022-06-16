@@ -105,10 +105,16 @@ CompExpr& CompExpr::sum(){
 		return * new CompExpr{str,sub_comp_1,sub_comp_2,operation::sum};
 	}
 
-	bool is_first_sum = sub_comp_1.get_op() == operation::sum;
-	Expr& 
+	bool is_first_sum = comp_sub_1.get_op() == operation::sum;
+	Expr& new_sub_1_1 = is_first_sum ? comp_sub_1.get_sub_1() : comp_sub_2.get_sub_1();
+	Expr& new_sub_1_2 = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
+	CompExpr& new_mem_2    = is_first_sum ? comp_sub_2 : comp_sub_1;
 
-	return * new CompExpr{sum,sub_comp_1,sub_comp_2,operation::sum};
+	std::string str_2 = new_sub_1_2.to_string() + " + " + new_mem_2.to_string();
+	Expr& sum_2 = * new CompExpr{str_2,new_sub_1_2,new_mem_2,operation::sum};
+
+	std::string str = new_sub_1_1.to_string() + " + " + sum_2.to_string();
+	return * new CompExpr{str,new_sub_1_1,sum_2,operation::sum};
 }
 
 CompExpr& CompExpr::distr_law(){
