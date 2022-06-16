@@ -87,22 +87,22 @@ CompExpr& CompExpr::sum(){
 		return * new CompExpr{sum,sub,sub_comp,operation::sum};
 		}
 	
-	CompExpr& sub_comp_1 = dynamic_cast<CompExpr&>(sub_1);
-	operation op_sub_1   = sub_comp_1.get_op();
-	CompExpr& sub_comp_2 = dynamic_cast<CompExpr&>(sub_2);
-	operation op_sub_2   = sub_comp_2.get_op();
+	CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
+	operation op_sub_1   = comp_sub_1.get_op();
+	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
+	operation op_sub_2   = comp_sub_2.get_op();
 	
 	if(op_sub_1 == operation::sum && op_sub_2 == operation::sum){
-		std::string str_2 = sub_comp_1.get_sub_2().to_string() + " + " + sub_comp_2.to_string();
-		CompExpr& sum_2 = new * CompExpr{str_2,sub_comp_1.get_sub_2(),sub_comp_2,operation::sum};
+		std::string str_2 = comp_sub_1.get_sub_2().to_string() + " + " + comp_sub_2.to_string();
+		CompExpr& sum_2 = * new CompExpr{str_2,comp_sub_1.get_sub_2(),comp_sub_2,operation::sum};
 
-		std::string str_1 ? sub_comp_1.get_sub_1.to_string() + " + " + sum_2.to_string();
-		CompExpr& sum_1 = new * CompExpr{sub_comp_1.get_sub_1(),sum_2,operation::sum};
+		std::string str_1 = comp_sub_1.get_sub_1().to_string() + " + " + sum_2.to_string();
+		CompExpr& sum_1 = * new CompExpr{comp_sub_1.get_sub_1(),sum_2,operation::sum};
 	}
 
 	if(op_sub_1 == operation::mul && op_sub_2 == operation::mul){
-		std::string str = sub_comp_1.to_string() + " + " + sub_comp_2.to_string();
-		return * new CompExpr{str,sub_comp_1,sub_comp_2,operation::sum};
+		std::string str = comp_sub_1.to_string() + " + " + comp_sub_2.to_string();
+		return * new CompExpr{str,comp_sub_1,comp_sub_2,operation::sum};
 	}
 
 	bool is_first_sum = comp_sub_1.get_op() == operation::sum;
