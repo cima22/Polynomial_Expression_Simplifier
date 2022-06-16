@@ -1,0 +1,6 @@
+- Use smart pointers to conciliate polymorphism and RAII
+- Add error handling
+- Add tests (Boost test library)
+- Check copy and move semantics (should be ok)
+- Add documentaion/report
+- Add comments

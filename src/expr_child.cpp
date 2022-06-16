@@ -309,54 +309,40 @@ CompExpr& CompExpr::stretch(){
 }
 
 CompExpr& CompExpr::extend(){
-	if(this->is_extended())
+	if(is_extended())
 		return *this;
 	return stretch().extend();
 }
-/*
+
 bool CompExpr::is_extended(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	bool is_comp_expr_2 = is_CompExpr(sub_2);
 
 	if(!is_comp_expr_1 && !is_comp_expr_2)
 		return true;
-	if(!is_comp_expr_1 && is_comp_expr_2)
-		return false;
-	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
-	switch(op){
-		case operation::sum:
-			if(!is_comp_expr_1)
-				return comp_sub_2.is_extended() || comp_sub_2.is_only_mult();
-			if(is_comp_expr_1){
-				CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
-				return comp_sub_1.is_only_mult() && (comp_sub_2.is_extended() || comp_sub_2.is_only_mult());
-			}
-		case operation::mul:
-			if(!is_comp_expr_1)
-				return comp_sub_2.is_only_mult();
-			if(is_comp_expr_1){
-				CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_2);
-				return comp_sub_1.is_only_mult() && comp_sub_2.is_only_mult();
-			}
-		default:
-			return false;
-	}
-}
-*/
-
-bool CompExpr::is_extendible(){
-	bool is_comp_expr_1 = is_CompExpr(sub_1);
-	bool is_comp_expr_2 = is_CompExpr(sub_2);
-
-	if(!is_comp_expr_1 && !is_comp_expr_2)
-		return true;
-	if(is_comp_expr_1 != !is_comp_expr_2){
+	if(is_comp_expr_1 != is_comp_expr_2){
 		CompExpr& comp_sub = is_comp_expr_1 ? dynamic_cast<CompExpr&>(sub_1) : dynamic_cast<CompExpr&>(sub_2);
 		switch(op){
 			case operation::sum:
-				// QUAAAAA
+				return comp_sub.is_extended();
+			case operation::mul:
+				return comp_sub.is_only_mult();
+			default:
+				return false;
 		}
 	}
+
+	CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
+	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
+	switch(op){
+		case operation::sum:
+			return (comp_sub_1.is_only_mult() && comp_sub_2.is_extended()) || (comp_sub_1.is_extended() && comp_sub_2.is_only_mult());
+		case operation::mul:
+			return comp_sub_1.is_only_mult() && comp_sub_2.is_only_mult();
+		default:
+			return false;
+	}
+	
 }
 
 bool CompExpr::is_only_mult(){
