@@ -73,6 +73,21 @@ operation CompExpr::get_op(){ return op; }
 Expr& CompExpr::get_sub_1(){ return sub_1; }
 Expr& CompExpr::get_sub_2(){ return sub_2; }
 
+CompExpr& CompExpr::compute_operation(){
+	bool is_comp_expr_1 = is_CompExpr(sub_1);	// wether the first sub-expression is compound or not 
+	bool is_comp_expr_2 = is_CompExpr(sub_2);	// same for the second sub-expression
+	
+	if(!is_comp_expr_1 && !is_comp_expr_2)
+		return * new CompExpr{sub_1,sub_2,op}; // if the operation is between two simple expressions, return a copy of the expression as it is
+	
+	if(is_comp_expr_1 != is_comp_expr_2){ // if one sub-expr is simple and another compound
+		CompExpr& sub_comp = is_comp_expr_1 ? dynamic_cast<CompExpr&>(sub_1) : dynamic_cast<CompExpr&>(sub_2);
+		Expr& sub          = is_comp_expr_1 ? sub_2 : sub_1;
+		std::string sum = sub.to_string() + " + " + sub_comp.to_string();
+		return * new CompExpr{sum,sub,sub_comp,operation::sum};
+		}
+}
+
 CompExpr& CompExpr::sum(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	bool is_comp_expr_2 = is_CompExpr(sub_2);
@@ -132,6 +147,35 @@ CompExpr& CompExpr::distr_law(){
 	return * new CompExpr{sum,new_sub_1,new_sub_2,operation::sum};
 }
 
+CompExpr& CompExpr::compound_mult(){
+	
+	CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
+	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
+	
+	std::string str_1_1   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
+	CompExpr&   mul_1_1   = * new CompExpr{str_1_1,comp_sub_1.get_sub_1(),comp_sub_2.get_sub_1(),operation::mul};
+
+	std::string str_1_2   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
+	CompExpr&   mul_1_2   = * new CompExpr{str_1_2,comp_sub_1.get_sub_1(),comp_sub_2.get_sub_2(),operation::mul};
+		
+	std::string str_2_1   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
+	CompExpr&   mul_2_1   = * new CompExpr{str_2_1,comp_sub_1.get_sub_2(),comp_sub_2.get_sub_1(),operation::mul};
+		
+	std::string str_2_2   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
+	CompExpr&   mul_2_2   = * new CompExpr{str_2_2,comp_sub_1.get_sub_2(),comp_sub_2.get_sub_2(),operation::mul};
+		
+	std::string   str_3   = mul_2_1.to_string() + " + " + mul_2_2.to_string();
+	CompExpr&     sum_3   = * new CompExpr{str_3,mul_2_1,mul_2_2,operation::sum};
+		
+	std::string   str_2   = mul_1_2.to_string() + " + " + sum_3.to_string();
+	CompExpr&     sum_2   = * new CompExpr{str_2,mul_1_2,sum_3,operation::sum};
+
+	std::string   str_1   = mul_1_1.to_string() + " + " + sum_2.to_string();
+	CompExpr&     sum_1   = * new CompExpr{str_1,mul_1_1,sum_2,operation::sum};
+
+	return sum_1;
+}
+
 CompExpr& CompExpr::mult(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	bool is_comp_expr_2 = is_CompExpr(sub_2);
@@ -159,28 +203,7 @@ CompExpr& CompExpr::mult(){
 	operation op_sub_2 = comp_sub_2.get_op();
 	
 	if(op_sub_1 == operation::sum && op_sub_2 == operation::sum){
-		std::string str_1_1   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
-		CompExpr&   mul_1_1   = * new CompExpr{str_1_1,comp_sub_1.get_sub_1(),comp_sub_2.get_sub_1(),operation::mul};
-
-		std::string str_1_2   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
-		CompExpr&   mul_1_2   = * new CompExpr{str_1_2,comp_sub_1.get_sub_1(),comp_sub_2.get_sub_2(),operation::mul};
-		
-		std::string str_2_1   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
-		CompExpr&   mul_2_1   = * new CompExpr{str_2_1,comp_sub_1.get_sub_2(),comp_sub_2.get_sub_1(),operation::mul};
-		
-		std::string str_2_2   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
-		CompExpr&   mul_2_2   = * new CompExpr{str_2_2,comp_sub_1.get_sub_2(),comp_sub_2.get_sub_2(),operation::mul};
-		
-		std::string   str_3   = mul_2_1.to_string() + " + " + mul_2_2.to_string();
-		CompExpr&     sum_3   = * new CompExpr{str_3,mul_2_1,mul_2_2,operation::sum};
-		
-		std::string   str_2   = mul_1_2.to_string() + " + " + sum_3.to_string();
-		CompExpr&     sum_2   = * new CompExpr{str_2,mul_1_2,sum_3,operation::sum};
-
-		std::string   str_1   = mul_1_1.to_string() + " + " + sum_2.to_string();
-		CompExpr&     sum_1   = * new CompExpr{str_1,mul_1_1,sum_2,operation::sum};
-
-		return sum_1;
+		return this->compound_mult();
 	}
 	
 	if(op_sub_1 == operation::mul && op_sub_2 == operation::mul){
