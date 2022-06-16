@@ -159,6 +159,7 @@ CompExpr& CompExpr::mult(){
 	operation op_sub_2 = comp_sub_2.get_op();
 	
 	if(op_sub_1 == operation::sum && op_sub_2 == operation::sum){
+		
 		std::string str_1_1   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
 		CompExpr&   mul_1_1   = * new CompExpr{str_1_1,comp_sub_1.get_sub_1(),comp_sub_2.get_sub_1(),operation::mul};
 
