@@ -24,6 +24,7 @@ class Expr{
 
 		virtual int evaluate() = 0;
 		virtual Expr& stretch() = 0;
+		virtual Expr& extend() = 0;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
 };

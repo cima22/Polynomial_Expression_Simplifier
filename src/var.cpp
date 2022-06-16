@@ -20,22 +20,4 @@ std::ostream& operator<< (std::ostream& os, const Var& v){
 	os << v.name << " = " << v.value;
 	return os;
 }
-/*
-Var operator+ (const Var& v1, const Var& v2){
-	const std::string name = v1.name + " + " + v2.name;
-	const float res = v1.value + v2.value;
-	return Var{name,res};
-}
 
-Var operator- (const Var& v1, const Var& v2){
-	const std::string name = v1.name + " - "  + v2.name;
-	const float res = v1.value - v2.value;
-	return Var{name,res};
-}
-
-Var operator* (const Var& v1, const Var& v2){
-	const std::string name = v1.name + " * " + v2.name;
-	const float res = v1.value * v2.value;
-	return Var{name,res};
-}
-*/
