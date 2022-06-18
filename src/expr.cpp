@@ -1,5 +1,7 @@
 #include "expr.h"
 
+Expr::Expr() = default;
+
 Expr::Expr(const Expr& expr) = default;
 
 Expr::Expr(ParentExpr * ptr){
@@ -14,7 +16,7 @@ std::ostream& operator<<(std::ostream& os, const Expr& ex){
  os << *ex.obj;
   return os;
 }
-
+/*
 const Expr operator+ (const Var& v, int c){
 	VarExpr*   v_e = new VarExpr{v};
 	ConstExpr* c_e = new ConstExpr{c};
@@ -86,6 +88,12 @@ const Expr operator+ (const Expr& e1, int i){
 	//CompExpr* e    = new CompExpr{e1};
 	return Expr{comp};
 }
+*/
+Expr& Expr::operator=(CompExpr& e1){
+	Expr ex{&e1};
+	return ex;
+}
+
 /*
 const Expr operator+(int i, const Expr& e1){
 	ConstExpr* c_e = new ConstExpr{i};

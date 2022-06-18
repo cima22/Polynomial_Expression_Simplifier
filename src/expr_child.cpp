@@ -387,7 +387,7 @@ CompExpr::~CompExpr(){
 }
 
 // operators ---------------------------------------------------------------------------
-/*
+
 CompExpr& operator+ (const Var& v, int c){
 	VarExpr*   v_e = new VarExpr{v};
 	ConstExpr* c_e = new ConstExpr{c};
@@ -434,7 +434,7 @@ CompExpr& operator* (const Var& v1, const Var& v2){
 	VarExpr* v_e_2 = new VarExpr{v2};
 	return * new CompExpr{*v_e_1,*v_e_2,operation::mul};
 }
-*/
+
 CompExpr& operator+ (CompExpr& e1, int i){
 	ConstExpr* c_e = new ConstExpr{i};
 	//CompExpr* e    = new CompExpr{e1};
