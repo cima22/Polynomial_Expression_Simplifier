@@ -34,11 +34,11 @@ enum class operation {sum, sub, mul};
 
 class CompExpr : public ParentExpr{ // Exression which is composed by the sum, subtracion of multiplication of two expressions
 	private:
-		//ParentExpr& sub_1;
-		//ParentExpr& sub_2;
+		ParentExpr& sub_1;
+		ParentExpr& sub_2;
 	
-		std::unique_ptr<ParentExpr> sub_1;
-		std::unique_ptr<ParentExpr> sub_2;
+		//std::unique_ptr<ParentExpr> sub_1;
+		//std::unique_ptr<ParentExpr> sub_2;
 		operation op;
 
 		std::string create_string(ParentExpr& e1, ParentExpr& e2, operation op);
