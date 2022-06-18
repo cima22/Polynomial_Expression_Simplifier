@@ -3,6 +3,8 @@
 
 ParentExpr::ParentExpr() = default;
 
+ParentExpr::~ParentExpr(){};
+
 ParentExpr::ParentExpr(const std::string& expr):
 	expression{expr},vars{}{
 
