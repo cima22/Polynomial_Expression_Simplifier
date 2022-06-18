@@ -65,6 +65,8 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		operation get_op();
 		ParentExpr& get_sub_1();
 		ParentExpr& get_sub_2();
+		
+		~CompExpr();
 
 		//std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
 		
