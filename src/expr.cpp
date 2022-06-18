@@ -1,10 +1,13 @@
 #include "expr.h"
-#include "expr_child.h"
 
 Expr::Expr(const Expr& expr) = default;
 
 Expr::Expr(ParentExpr * ptr){
 	obj.reset(ptr);
+}
+
+ParentExpr& Expr::get_obj() const{
+	return *obj;
 }
 
 std::ostream& operator<<(std::ostream& os, const Expr& ex){
@@ -77,12 +80,13 @@ const Expr operator* (const Var& v1, const Var& v2){
 
 const Expr operator+ (const Expr& e1, int i){
 	ConstExpr* c_e = new ConstExpr{i};
-	CompExpr* comp_sub = new ConstExpr{e1};
+	CompExpr& comp_sub_ref = dynamic_cast<CompExpr&>(e1.get_obj());
+	CompExpr* comp_sub = new CompExpr{comp_sub_ref};
 	CompExpr* comp = new CompExpr{*comp_sub,*c_e,operation::sum};
 	//CompExpr* e    = new CompExpr{e1};
 	return Expr{comp};
 }
-
+/*
 const Expr operator+(int i, const Expr& e1){
 	ConstExpr* c_e = new ConstExpr{i};
 	//CompExpr* e    = new CompExpr{e1};
@@ -168,4 +172,4 @@ const Expr operator*(const Expr& e1, const Expr& e2){
 	delete &e1;
 	delete &e2;
 	return * new CompExpr{e_1,e_2,operation::mul};
-}
+}*/

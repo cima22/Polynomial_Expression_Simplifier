@@ -70,7 +70,7 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		ParentExpr& get_sub_2();
 		
 		//std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
-		
+	/*	
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator* (const CompExpr& e1, const CompExpr& e2);
@@ -91,7 +91,7 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		friend CompExpr& operator- (const Var& v1, CompExpr& e1);
 
 		friend CompExpr& operator* (CompExpr& e1, const Var& v1);
-		friend CompExpr& operator* (const Var& v1, CompExpr& e1);
+		friend CompExpr& operator* (const Var& v1, CompExpr& e1);*/
 };
 /*
 CompExpr& operator+ (const Var& v, int c);
