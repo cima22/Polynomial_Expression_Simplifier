@@ -22,7 +22,7 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		bool is_extended() override;
 	public:
 		ConstExpr(const int i);
-		virtual ~CompExpr();
+		virtual ~ConstExpr();
 		int evaluate() override;
 		ConstExpr& stretch() override;
 		ConstExpr& extend() override;

@@ -21,7 +21,7 @@ VarExpr& VarExpr::extend(){
 	return *this;
 }
 
-~VarExpr() = default;
+VarExpr::~VarExpr() = default;
 
 bool VarExpr::is_extended(){
 	return true;
@@ -56,7 +56,7 @@ bool ConstExpr::is_extended(){
 	return true;
 }
 
-~ConstExpr() = default;
+ConstExpr::~ConstExpr() = default;
 
 /*
 std::map<unsigned int, ConstExpr> ConstExpr::get_coeffs(const Var& v){
@@ -384,6 +384,7 @@ int CompExpr::evaluate(){
 CompExpr::~CompExpr(){
 	delete &sub_1;
 	delete &sub_2;
+	
 }
 
 // operators ---------------------------------------------------------------------------
