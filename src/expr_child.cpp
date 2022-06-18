@@ -376,7 +376,10 @@ int CompExpr::evaluate(){
 	return 0;
 }
 
-
+CompExpr::~CompExpr(){
+	delete *sub_1;
+	delete *sub_2;
+}
 
 // operators ---------------------------------------------------------------------------
 /*
