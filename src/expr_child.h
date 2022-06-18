@@ -1,25 +1,29 @@
 #include "expr.h"
 #include <string>
+#include <map>
 
 class VarExpr : public Expr{ // Expression which is composed only by one variable, e.g.: x
+	private:
+		bool is_extended() override;
+
 	public:
 		VarExpr(const Var& v);
 		void set_value(int v);
 		int evaluate() override;
 		VarExpr& stretch() override;
-		VarExpr& extend() override;
-		bool is_extended() override;
+		std::map<unsigned int,&Expr> get_coeffs(const Var& v) const override;
 };
 
 class ConstExpr : public Expr{ // Expression which is composed only by one constant, e.g.: 2
 	private:
 		int value;
+		bool is_extended() override;
 	public:
 		ConstExpr(const int i);
 		int evaluate() override;
 		ConstExpr& stretch() override;
 		ConstExpr& extend() override;
-		bool is_extended() override;
+		std::map<unsigned int,&Expr> get_coeffs(const Var& v) const override;
 };
 
 enum class operation {sum, sub, mul};
@@ -33,6 +37,7 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		std::string create_string(Expr& e1, Expr& e2, operation op);
 		bool is_CompExpr(Expr& ex);
 		
+		CompExpr& compute_operation();
 		CompExpr& sum_simple_comp();
 		CompExpr& mult_simple_comp();
 		CompExpr& distr_law();
@@ -45,7 +50,7 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		CompExpr& mult_mult();
 		CompExpr& mult_mixed();
 
-		//bool is_extended();
+		bool is_extended();
 		bool is_only_mult();
 
 	public:
@@ -59,10 +64,8 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		operation get_op();
 		Expr& get_sub_1();
 		Expr& get_sub_2();
-		
-		bool is_extended();
 
-		CompExpr& compute_operation();
+		std::map<unsigned,&Expr> get_coeffs(const Var& x) const override;
 		
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);

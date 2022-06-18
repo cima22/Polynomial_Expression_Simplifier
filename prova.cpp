@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <memory>
 
 class Try{
 	private:
@@ -25,7 +26,7 @@ class Try_child : public Try{
 	Try_child(int i, std::string s): Try(i,s){}
 
 	void printa() override {
-		std::cout << "Try_child" << std::endl;
+		std::cout << "\nTry_child" << std::endl;
 	}
 
 };
@@ -35,7 +36,7 @@ class Try_child_2 : public Try{
 	Try_child_2(int i) : Try(i){std::cout<<"Custom try_child_2";}
 
 	void printa() override{
-		std::cout << "Try_child_2" << std::endl;
+		std::cout << "\nTry_child_2" << std::endl;
 	}
 
 };
@@ -49,6 +50,29 @@ Try_child_2& operator+(const Try_child_2& op1, const Try_child_2& op2){
 	int res = op1.get_i() + op2.get_i();
 	return * new Try_child_2{res};
 }
+
+enum type {one,two};
+
+struct Try_container{
+	//std::shared_ptr<Try> obj;
+	Try * obj;
+	Try_container(int i,type t){
+		switch(t){
+			case one:
+				//obj = std::shared_ptr<Try>(new Try_child{i});
+				obj = new Try_child{i};
+				break;
+			case two:
+				//obj = std::shared_ptr<Try>(new Try_child_2{i});
+				obj = new Try_child_2{i};
+				break;
+		}
+	}
+
+	void printa(){
+		obj->printa();
+	}
+};
 
 void test(Try_child& bu){
 	std::cout << "ciao";
@@ -66,5 +90,11 @@ int main(){
 	std::cout << "\n" << tc1.get_i() << "\n" << tc2.get_i() << "\n " << tc5.get_i() << std::endl;
 	*/
 	Try_child tc{3,"ciao"};
+
+	Try_container t{3,one};
+	Try_container t2{1,two};
+
+	t.printa();
+	t2.printa();
 	
 }

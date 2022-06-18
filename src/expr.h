@@ -1,33 +1,17 @@
-#ifndef _EXPR_
-#define _EXPR_
-
-#include <string>
-#include <vector>
-#include <algorithm>
-#include "var.h"
+#include <iostream>
+#include <memory>
+#include "expr_parent.h"
 
 class Expr{
-	
-	protected:
-		std::string expression; 	// string format of the expression
-		std::vector<Var> vars;  	// vector of variables
-
-		void extract_vars();
+	private:
+		std::unique_ptr<ExprParent> obj;
 
 	public:
-		Expr();
-		Expr(const std::string& expr);
-		Expr(const std::string& expr, const std::vector<Var>& vars);
+		Expr(ParentExpr *);
+		std::map<unsigned int,Expr> get_coeffs(const Var& v);
+		Expr &replace(const std::map<Var,Expr>& repl);
+		bool equivalent(const Expr& e1, const Expr& e2);
 
-		std::vector<Var> get_variables() const;
-		const std::string& to_string() const;
+		friend ostream& operator<<(ostream& os, const Expr& ex);
 
-		virtual int evaluate() = 0;
-		virtual Expr& stretch() = 0;
-		virtual Expr& extend() = 0;
-		virtual bool is_extended() = 0;
-
-		friend std::ostream& operator<<(std::ostream& os, const Expr& expr);
 };
-
-#endif

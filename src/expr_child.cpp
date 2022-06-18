@@ -25,6 +25,16 @@ bool VarExpr::is_extended(){
 	return true;
 }
 
+std::map<unsigned int, Expr> VarExpr::get_coeffs(const Var& v){
+	std::map coeffs<unsigned int, Expr>;
+	bool is_same_var = vars[0].get_name().compare(v.get_name())
+	ConsExpr g_1 = is_same_var ? ConstExpr{1} : ConstExpr{0};
+	ConsExpr g_0{0};
+	coeffs.insert({0,g_0});
+	coeffs.insert({1,g_1});
+	return coeffs;
+}
+
 ConstExpr::ConstExpr(const int i):
 	value{i},Expr(std::to_string(i)){}
 
@@ -42,6 +52,10 @@ ConstExpr& ConstExpr::extend(){
 
 bool ConstExpr::is_extended(){
 	return true;
+}
+
+std::map<unsigned int, ConstExpr> ConstExpr::get_coeffs(const Var& v){
+	return std::map<unsigned int, ConstExpr>{{0,ConstExpr{0}}};
 }
 
 std::string CompExpr::create_string(Expr& e1, Expr& e2, const operation op){
