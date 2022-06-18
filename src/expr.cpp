@@ -3,8 +3,9 @@
 
 Expr::Expr(const Expr& expr) = default;
 
-Expr::Expr(ParentExpr * ptr):
-obj{ptr}{}
+Expr::Expr(ParentExpr * ptr){
+	obj.reset(ptr);
+}
 
 std::ostream& operator<<(std::ostream& os, const Expr& ex){
  os << *ex.obj;

@@ -184,8 +184,8 @@ CompExpr& CompExpr::sum_mult(){
 CompExpr& CompExpr::sum_mixed(){
 	CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
 	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
-
 	bool is_first_sum = comp_sub_1.get_op() == operation::sum;
+
 	ParentExpr& new_sub_1_1 = is_first_sum ? comp_sub_1.get_sub_1() : comp_sub_2.get_sub_1();
 	ParentExpr& new_sub_1_2 = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
 	CompExpr& new_mem_2    = is_first_sum ? comp_sub_2 : comp_sub_1;
