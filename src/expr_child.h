@@ -2,7 +2,7 @@
 #include <string>
 #include <map>
 
-class VarExpr : public Expr{ // Expression which is composed only by one variable, e.g.: x
+class VarExpr : public ParentExpr{ // Expression which is composed only by one variable, e.g.: x
 	private:
 		bool is_extended() override;
 
@@ -11,10 +11,10 @@ class VarExpr : public Expr{ // Expression which is composed only by one variabl
 		void set_value(int v);
 		int evaluate() override;
 		VarExpr& stretch() override;
-		std::map<unsigned int,&Expr> get_coeffs(const Var& v) const override;
+		std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
 };
 
-class ConstExpr : public Expr{ // Expression which is composed only by one constant, e.g.: 2
+class ConstExpr : public ParentExpr{ // Expression which is composed only by one constant, e.g.: 2
 	private:
 		int value;
 		bool is_extended() override;
@@ -23,19 +23,19 @@ class ConstExpr : public Expr{ // Expression which is composed only by one const
 		int evaluate() override;
 		ConstExpr& stretch() override;
 		ConstExpr& extend() override;
-		std::map<unsigned int,&Expr> get_coeffs(const Var& v) const override;
+		std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
 };
 
 enum class operation {sum, sub, mul};
 
-class CompExpr : public Expr{ // Exression which is composed by the sum, subtracion of multiplication of two expressions
+class CompExpr : public ParentExpr{ // Exression which is composed by the sum, subtracion of multiplication of two expressions
 	private:
-		Expr& sub_1;
-		Expr& sub_2;
+		ParentExpr& sub_1;
+		ParentExpr& sub_2;
 		operation op;
 
-		std::string create_string(Expr& e1, Expr& e2, operation op);
-		bool is_CompExpr(Expr& ex);
+		std::string create_string(ParentExpr& e1, ParentExpr& e2, operation op);
+		bool is_CompExpr(ParentExpr& ex);
 		
 		CompExpr& compute_operation();
 		CompExpr& sum_simple_comp();
@@ -54,18 +54,18 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		bool is_only_mult();
 
 	public:
-		CompExpr(Expr& e1, Expr& e2, operation op);
-		CompExpr(const std::string& expr, Expr& e1, Expr& e2, operation op);
-		CompExpr(const std::string& expr, const std::vector<Var>& vars, Expr& e1, Expr& e2, operation op);
+		CompExpr(ParentExpr& e1, ParentExpr& e2, operation op);
+		CompExpr(const std::string& expr, ParentExpr& e1, ParentExpr& e2, operation op);
+		CompExpr(const std::string& expr, const std::vector<Var>& vars, ParentExpr& e1, ParentExpr& e2, operation op);
 		
 		int evaluate() override;
 		CompExpr& stretch() override;
 		CompExpr& extend() override;
 		operation get_op();
-		Expr& get_sub_1();
-		Expr& get_sub_2();
+		ParentExpr& get_sub_1();
+		ParentExpr& get_sub_2();
 
-		std::map<unsigned,&Expr> get_coeffs(const Var& x) const override;
+		std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
 		
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
@@ -89,7 +89,7 @@ class CompExpr : public Expr{ // Exression which is composed by the sum, subtrac
 		friend CompExpr& operator* (CompExpr& e1, const Var& v1);
 		friend CompExpr& operator* (const Var& v1, CompExpr& e1);
 };
-
+/*
 CompExpr& operator+ (const Var& v, int c);
 CompExpr& operator+ (int c, const Var& v);
 CompExpr& operator- (const Var& v, int c);
@@ -99,3 +99,4 @@ CompExpr& operator* (int c, const Var& v);
 CompExpr& operator+ (const Var& v1, const Var& v2);
 CompExpr& operator- (const Var& v1, const Var& v2);
 CompExpr& operator* (const Var& v1, const Var& v2);
+*/
