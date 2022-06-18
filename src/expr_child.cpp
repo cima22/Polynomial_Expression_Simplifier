@@ -25,7 +25,7 @@ bool VarExpr::is_extended(){
 	return true;
 }
 
-std::map<unsigned int, Expr> VarExpr::get_coeffs(const Var& v){
+std::map<unsigned int, ParentExpr> VarExpr::get_coeffs(const Var& v){
 	std::map coeffs<unsigned int, Expr>;
 	bool is_same_var = vars[0].get_name().compare(v.get_name())
 	ConsExpr g_1 = is_same_var ? ConstExpr{1} : ConstExpr{0};
@@ -58,7 +58,7 @@ std::map<unsigned int, ConstExpr> ConstExpr::get_coeffs(const Var& v){
 	return std::map<unsigned int, ConstExpr>{{0,ConstExpr{0}}};
 }
 
-std::string CompExpr::create_string(Expr& e1, Expr& e2, const operation op){
+std::string CompExpr::create_string(ParentExpr& e1, ParentExpr& e2, const operation op){
 	char op_c;
 	switch(op){
 		case operation::sum:
@@ -85,17 +85,17 @@ std::string CompExpr::create_string(Expr& e1, Expr& e2, const operation op){
 	return std::string{member_1 + " " + op_c + " " + member_2};
 }
 
-bool CompExpr::is_CompExpr(Expr& ex){ return dynamic_cast<CompExpr*>(&ex); }
+bool CompExpr::is_CompExpr(ParentExpr& ex){ return dynamic_cast<CompExpr*>(&ex); }
 
-CompExpr::CompExpr(Expr& e1, Expr& e2, const operation op):
+CompExpr::CompExpr(ParentExpr& e1, ParentExpr& e2, const operation op):
 	sub_1{e1}, sub_2{e2}, op{op}, Expr(create_string(e1,e2,op))
 	{}
 
-CompExpr::CompExpr(const std::string& expr, Expr& e1, Expr& e2, operation op):
+CompExpr::CompExpr(const std::string& expr, ParentExpr& e1, ParentExpr& e2, operation op):
 	sub_1{e1},sub_2{e2},op{op},Expr(expr)
 	{}
 
-CompExpr::CompExpr(const std::string& expr, const std::vector<Var>& vars, Expr& e1, Expr& e2, operation op):
+CompExpr::CompExpr(const std::string& expr, const std::vector<Var>& vars, ParentExpr& e1, ParentExpr& e2, operation op):
 	sub_1{e1},sub_2{e2},op{op},Expr(expr,vars)
 	{}
 
@@ -377,7 +377,7 @@ int CompExpr::evaluate(){
 }
 
 // operators ---------------------------------------------------------------------------
-
+/*
 CompExpr& operator+ (const Var& v, int c){
 	VarExpr*   v_e = new VarExpr{v};
 	ConstExpr* c_e = new ConstExpr{c};
@@ -424,7 +424,7 @@ CompExpr& operator* (const Var& v1, const Var& v2){
 	VarExpr* v_e_2 = new VarExpr{v2};
 	return * new CompExpr{*v_e_1,*v_e_2,operation::mul};
 }
-
+*/
 CompExpr& operator+ (CompExpr& e1, int i){
 	ConstExpr* c_e = new ConstExpr{i};
 	//CompExpr* e    = new CompExpr{e1};
