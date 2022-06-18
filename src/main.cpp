@@ -9,7 +9,7 @@ int main(int argc, char* argv[]){
 	Var y{"y"};
 	Var z{"z"};
 
-	Expr ex = x + y;		
+	Expr ex = 2 * x;		
 	std::cout << ex << std::endl;
 	
 }

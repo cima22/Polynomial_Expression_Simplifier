@@ -384,7 +384,6 @@ int CompExpr::evaluate(){
 CompExpr::~CompExpr(){
 	delete &sub_1;
 	delete &sub_2;
-	std::cout << "quaaaa";
 }
 
 // operators ---------------------------------------------------------------------------
