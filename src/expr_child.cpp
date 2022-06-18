@@ -348,7 +348,7 @@ bool CompExpr::is_extended(){
 
 	CompExpr& comp_sub_1 = dynamic_cast<CompExpr&>(sub_1);
 	CompExpr& comp_sub_2 = dynamic_cast<CompExpr&>(sub_2);
-	iswitch(op){
+	switch(op){
 		case operation::sum:
 			return (comp_sub_1.is_only_mult() && comp_sub_2.is_extended()) || (comp_sub_1.is_extended() && comp_sub_2.is_only_mult());
 		case operation::mul:
@@ -377,8 +377,8 @@ int CompExpr::evaluate(){
 }
 
 CompExpr::~CompExpr(){
-	delete *sub_1;
-	delete *sub_2;
+	delete &sub_1;
+	delete &sub_2;
 }
 
 // operators ---------------------------------------------------------------------------
