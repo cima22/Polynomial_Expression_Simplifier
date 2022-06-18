@@ -1,10 +1,12 @@
 #include "expr.h"
 
+Expr::Expr(const Expr& expr) = default;
+
 Expr::Expr(ParentExpr * ptr):
 obj{ptr}{}
 
-ostream& operator<<(ostream& os, const Expr& ex){
- os << *obj;
+std::ostream& operator<<(std::ostream& os, const Expr& ex){
+ os << *ex.obj;
   return os;
 }
 
