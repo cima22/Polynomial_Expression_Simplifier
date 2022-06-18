@@ -17,12 +17,12 @@ class Expr{
 
 };
 
-const Expr& operator+ (const Var& v, int c);
-const Expr& operator+ (int c, const Var& v);
-const Expr& operator- (const Var& v, int c);
-const Expr& operator- (int c, const Var& v);
-const Expr& operator* (const Var& v, int c);
-const Expr& operator* (int c, const Var& v);
-const Expr& operator+ (const Var& v1, const Var& v2);
-const Expr& operator- (const Var& v1, const Var& v2);
-const Expr& operator* (const Var& v1, const Var& v2);
+const Expr operator+ (const Var& v, int c);
+const Expr operator+ (int c, const Var& v);
+const Expr operator- (const Var& v, int c);
+const Expr operator- (int c, const Var& v);
+const Expr operator* (const Var& v, int c);
+const Expr operator* (int c, const Var& v);
+const Expr operator+ (const Var& v1, const Var& v2);
+const Expr operator- (const Var& v1, const Var& v2);
+const Expr operator* (const Var& v1, const Var& v2);

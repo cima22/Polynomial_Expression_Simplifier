@@ -1,19 +1,19 @@
-#include "expr.h"
+#include "expr_parent.h"
 #include <string>
 
-Expr::Expr() = default;
+ParentExpr::ParentExpr() = default;
 
-Expr::Expr(const std::string& expr):
+ParentExpr::ParentExpr(const std::string& expr):
 	expression{expr},vars{}{
 
 	extract_vars();
 
 	}
 
-Expr::Expr(const std::string& expr, const std::vector<Var>& vars):
+ParentExpr::ParentExpr(const std::string& expr, const std::vector<Var>& vars):
 	expression{expr},vars{vars}{}
 
-void Expr::extract_vars(){
+void ParentExpr::extract_vars(){
 	
 	std::string work = expression;
 	std::vector<char> names;
@@ -28,13 +28,13 @@ void Expr::extract_vars(){
 
 }
 
-std::vector<Var> Expr::get_variables() const { return vars; }
+std::vector<Var> ParentExpr::get_variables() const { return vars; }
 
-const std::string& Expr::to_string() const { return expression; }
+const std::string& ParentExpr::to_string() const { return expression; }
 
 //------------------------- From now on, operators definition only ---------------------------------------------------
 
-std::ostream& operator<<(std::ostream& os, const Expr& expr){
+std::ostream& operator<<(std::ostream& os, const ParentExpr& expr){
 	os << expr.expression;
 	return os;
 }

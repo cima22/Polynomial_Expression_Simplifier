@@ -11,7 +11,8 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		void set_value(int v);
 		int evaluate() override;
 		VarExpr& stretch() override;
-		std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
+		VarExpr& extend() override;
+		//std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
 };
 
 class ConstExpr : public ParentExpr{ // Expression which is composed only by one constant, e.g.: 2
@@ -23,7 +24,7 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		int evaluate() override;
 		ConstExpr& stretch() override;
 		ConstExpr& extend() override;
-		std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
+		//std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
 };
 
 enum class operation {sum, sub, mul};
@@ -65,7 +66,7 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		ParentExpr& get_sub_1();
 		ParentExpr& get_sub_2();
 
-		std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
+		//std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
 		
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
