@@ -21,6 +21,8 @@ VarExpr& VarExpr::extend(){
 	return *this;
 }
 
+~VarExpr() = default;
+
 bool VarExpr::is_extended(){
 	return true;
 }
@@ -53,6 +55,9 @@ ConstExpr& ConstExpr::extend(){
 bool ConstExpr::is_extended(){
 	return true;
 }
+
+~ConstExpr() = default;
+
 /*
 std::map<unsigned int, ConstExpr> ConstExpr::get_coeffs(const Var& v){
 	return std::map<unsigned int, ConstExpr>{{0,ConstExpr{0}}};
