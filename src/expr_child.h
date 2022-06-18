@@ -8,6 +8,7 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 
 	public:
 		VarExpr(const Var& v);
+		~VarExpr() override;
 		void set_value(int v);
 		int evaluate() override;
 		VarExpr& stretch() override;
@@ -21,6 +22,7 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		bool is_extended() override;
 	public:
 		ConstExpr(const int i);
+		~CompExpr() override;
 		int evaluate() override;
 		ConstExpr& stretch() override;
 		ConstExpr& extend() override;
@@ -58,7 +60,8 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		CompExpr(ParentExpr& e1, ParentExpr& e2, operation op);
 		CompExpr(const std::string& expr, ParentExpr& e1, ParentExpr& e2, operation op);
 		CompExpr(const std::string& expr, const std::vector<Var>& vars, ParentExpr& e1, ParentExpr& e2, operation op);
-		
+		~CompExpr() override;	
+	
 		int evaluate() override;
 		CompExpr& stretch() override;
 		CompExpr& extend() override;
@@ -66,8 +69,6 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		ParentExpr& get_sub_1();
 		ParentExpr& get_sub_2();
 		
-		~CompExpr();
-
 		//std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
 		
 		friend CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
