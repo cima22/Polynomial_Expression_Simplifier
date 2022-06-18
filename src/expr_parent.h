@@ -19,7 +19,7 @@ class ParentExpr{
 		ParentExpr();
 		ParentExpr(const std::string& expr);
 		ParentExpr(const std::string& expr, const std::vector<Var>& vars);
-
+		virtual ~ParentExpr();
 		std::vector<Var> get_variables() const;
 		const std::string& to_string() const;
 
