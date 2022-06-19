@@ -9,12 +9,12 @@ int main(int argc, char* argv[]){
 	Var y{"y"};
 	Var z{"z"};
 	
-	VarExpr vx{x};
-	VarExpr vy{y};
-	//Expr ex = (2 * x) + 3;		
-	//std::cout << ex << std::endl;
-	CompExpr& ce = * new CompExpr{vx,vy,operation::sum};
-	Expr ex;
-	ex = ce;
-	
+//	Expr ex = (x + y) * (x + z) + 3 + y;
+//	Expr ex = 3 + x;
+//	std::cout << ex << std::endl;
+//	Expr ex1 = ex.extend();
+//	std::cout << ex << " = " << ex1 << std::endl;
+	CompExpr cex = (x + y);
+	cex.stretch();
+
 }

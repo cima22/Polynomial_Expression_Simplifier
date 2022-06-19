@@ -24,9 +24,9 @@ class ParentExpr{
 		const std::string& to_string() const;
 
 		virtual int evaluate() = 0;
-		virtual ParentExpr& stretch() = 0;
-		virtual ParentExpr& extend() = 0;
-		virtual bool is_extended() = 0;
+		const virtual ParentExpr& stretch() const = 0;
+		const virtual ParentExpr& extend() const = 0;
+		virtual bool is_extended() const = 0;
 		//virtual std::map<unsigned int, ParentExpr&> get_coeffs(const Var& v) const;
 
 		friend std::ostream& operator<<(std::ostream& os, const ParentExpr& expr);
