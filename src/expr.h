@@ -1,7 +1,10 @@
 #include <iostream>
 #include <memory>
+#include <vector>
+#include <map>
 #include "expr_parent.h"
 #include "expr_child.h"
+#include "var.h"
 
 class Expr{
 	private:
@@ -15,11 +18,12 @@ class Expr{
 		Expr(Var& v);
 		Expr(int i);
 		Expr();
+		
+		std::vector<Var> get_variables() const;
 		std::map<unsigned int,Expr> get_coeffs(const Var& v);
 		Expr &replace(const std::map<Var,Expr>& repl);
 		bool equivalent(const Expr& e1, const Expr& e2);
 		const Expr extend();
-		Expr stretch();	
 		const ParentExpr& get_obj() const;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& ex);

@@ -15,13 +15,16 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		const VarExpr& stretch() const override;
 		const VarExpr& extend() const override;
 		const VarExpr& clone() const override;
-		//std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
+		bool is_only_mult() const override;
+		std::map<unsigned int,const ParentExpr&> get_coeffs(const Var& v) const override;
+		void insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs,const Var& v) const override;
 };
 
 class ConstExpr : public ParentExpr{ // Expression which is composed only by one constant, e.g.: 2
 	private:
 		int value;
 		bool is_extended() const override;
+
 	public:
 		ConstExpr(const int i);
 		virtual ~ConstExpr();
@@ -29,7 +32,9 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		const ConstExpr& stretch() const override;
 		const ConstExpr& extend() const override;
 		const ConstExpr& clone() const override;
-		//std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
+		bool is_only_mult() const override;
+		std::map<unsigned int,const ParentExpr&> get_coeffs(const Var& v) const override;
+		void insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs,const Var& v) const override;
 };
 
 enum class operation {sum, sub, mul};
@@ -38,15 +43,12 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 	private:
 		const ParentExpr& sub_1;
 		const ParentExpr& sub_2;
-	
-		//std::unique_ptr<ParentExpr> sub_1;
-		//std::unique_ptr<ParentExpr> sub_2;
 		operation op;
 
 		std::string create_string(const ParentExpr& e1, const ParentExpr& e2, operation op);
 		bool is_CompExpr(const ParentExpr& ex) const;
-		
-	//	const CompExpr& compute_operation();
+			
+		const CompExpr& compute_operation();
 		const CompExpr& sum_simple_comp();
 		const CompExpr& mult_simple_comp();
 		const CompExpr& distr_law();
@@ -60,7 +62,6 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		const CompExpr& mult_mixed();
 
 		bool is_extended() const override;
-		bool is_only_mult() const;
 
 	public:
 		CompExpr(const ParentExpr& e1, const ParentExpr& e2, operation op);
@@ -75,10 +76,10 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		const operation get_op() const;
 		const ParentExpr& get_sub_1() const;
 		const ParentExpr& get_sub_2() const;
-		const CompExpr& compute_operation();
-		//std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
-		
+		std::map<unsigned int,const ParentExpr&> get_coeffs(const Var& x) const override;
+		void insert_coeff(std::map<unsigned int,const ParentExpr&>& coeffs,const Var& v) const override;
 		const CompExpr& clone() const override;
+		bool is_only_mult() const override;
 
 		friend const CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend const CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);

@@ -1,4 +1,5 @@
 #include "expr_child.h"
+#include "expr_parent.h"
 #include <string>
 #include <type_traits>
 
@@ -25,21 +26,36 @@ const VarExpr& VarExpr::clone() const{
 	return * new VarExpr{*this};
 }
 
+bool VarExpr::is_only_mult() const{
+	return true;
+}
+
 VarExpr::~VarExpr() = default;
 
 bool VarExpr::is_extended() const {
 	return true;
 }
-/*
-std::map<unsigned int, ParentExpr> VarExpr::get_coeffs(const Var& v){
-	std::map coeffs<unsigned int, Expr>;
-	bool is_same_var = vars[0].get_name().compare(v.get_name())
-	ConsExpr g_1 = is_same_var ? ConstExpr{1} : ConstExpr{0};
-	ConsExpr g_0{0};
-	coeffs.insert({0,g_0});
-	coeffs.insert({1,g_1});
+
+std::map<unsigned int, const ParentExpr&> VarExpr::get_coeffs(const Var& v) const {
+	std::map<unsigned int,const ParentExpr&> coeffs{};
+	bool is_same_var = vars[0].get_name().compare(v.get_name());
+	if(is_same_var){
+		ConstExpr& g_1 = * new ConstExpr{1};
+		coeffs.insert({1,g_1});
+	}
 	return coeffs;
-}*/
+}
+
+void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs, const Var& v) const{
+	bool present = coeffs.find(1) == coeffs.end() ? false : true;
+	if(present){
+		CompExpr& new_coeff = * new CompExpr{coeffs[1],clone(),operation::sum};
+		coeffs.insert({1,new_coeff});
+	}
+	else{
+		coeffs.insert({1,clone()});
+	}
+}
 
 ConstExpr::ConstExpr(const int i):
 	value{i},ParentExpr(std::to_string(i)){}
@@ -66,11 +82,22 @@ const ConstExpr& ConstExpr::clone() const{
 
 ConstExpr::~ConstExpr() = default;
 
-/*
-std::map<unsigned int, ConstExpr> ConstExpr::get_coeffs(const Var& v){
-	return std::map<unsigned int, ConstExpr>{{0,ConstExpr{0}}};
+
+std::map<unsigned int, const ParentExpr&> ConstExpr::get_coeffs(const Var& v) const {
+	return std::map<unsigned int, const ParentExpr&>{};
 }
-*/
+
+void ConstExpr::insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs, const Var& v) const{
+	bool present = coeffs.find(0) == coeffs.end() ? false : true;
+	if(present){
+		CompExpr& new_coeff = * new CompExpr{coeffs[0],clone(),operation::sum};
+		coeffs.insert({0,new_coeff});
+	}
+	else{
+		coeffs.insert({0,clone()});
+	}
+}
+
 std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, const operation op){
 	char op_c;
 	switch(op){
@@ -124,6 +151,31 @@ const CompExpr& CompExpr::clone() const{
 	const ParentExpr& clone_sub_1 = sub_1.clone();
 	const ParentExpr& clone_sub_2 = sub_2.clone();
 	return * new CompExpr{clone_sub_1,clone_sub_2,op};
+}
+
+std::map<unsigned int, const ParentExpr&> ParentExpr::get_coeffs(const Var& v) const {
+	std::map<unsigned int,const ParentExpr&> coeffs{};
+	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
+	const ParentExpr& ext_sub_1 = extended.get_sub_1();
+	const ParentExpr& ext_sub_2 = extended.get_sub_2();
+	bool is_only_mult_1 = ext_sub_1.is_only_mult();
+	bool is_only_mult_2 = ext_sub_2.is_only_mult();
+
+	if(is_only_mult_1 != is_only_mult_2){
+		const ParentExpr& ext_sub = is_only_mult_1 ? ext_sub_2 : ext_sub_1; 
+		coeffs = ext_sub.get_coeffs(v);
+	}
+	
+	if(is_only_mult_1)
+		ext_sub_1.insert_coeff(coeffs,v);
+	if(is_only_mult_2)
+		ext_sub_2.insert_coeff(coeffs,v);
+
+	return coeffs;
+}
+
+void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr &> &coeffs, const Var &v){
+
 }
 
 const CompExpr& CompExpr::compute_operation(){

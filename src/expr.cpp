@@ -1,4 +1,5 @@
 #include "expr.h"
+#include <vector>
 
 Expr::Expr() = default;
 
@@ -30,15 +31,18 @@ const ParentExpr& Expr::get_obj() const{
 	return *obj;
 }
 
+std::vector<Var> Expr::get_variables() const{
+	return obj->get_variables();
+}
+
 const Expr Expr::extend(){
 	return Expr{obj->extend()};
 }
-
-Expr Expr::stretch(){
-	Expr ex{obj->stretch()};
-	return ex;
+/*
+std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
+	return 0;	
 }
-
+*/
 std::ostream& operator<<(std::ostream& os, const Expr& ex){
  os << *ex.obj;
   return os;
