@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
 //	std::cout << ex << std::endl;
 //	Expr ex1 = ex.extend();
 //	std::cout << ex << " = " << ex1 << std::endl;
-	CompExpr cex = (x + y);
-	cex.stretch();
+	Expr ex = (x + y);
+	std::cout << ex.stretch() << std::endl;
 
 }

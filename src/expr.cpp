@@ -34,6 +34,10 @@ const Expr Expr::extend(){
 	return Expr{obj->extend()};
 }
 
+const Expr Expr::stretch(){
+	return Expr{obj->stretch()};
+}
+
 std::ostream& operator<<(std::ostream& os, const Expr& ex){
  os << *ex.obj;
   return os;

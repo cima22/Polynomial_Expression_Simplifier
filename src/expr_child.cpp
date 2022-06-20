@@ -14,7 +14,7 @@ int VarExpr::evaluate(){
 }
 
 const VarExpr& VarExpr::stretch() const {
-	return *this;
+	return * new VarExpr{*this};
 }
 
 const VarExpr& VarExpr::extend() const {
@@ -45,7 +45,7 @@ int ConstExpr::evaluate(){
 }
 
 const ConstExpr& ConstExpr::stretch() const {
-	return *this;
+	return * new ConstExpr{*this};
 }
 
 const ConstExpr& ConstExpr::extend() const {
@@ -324,7 +324,8 @@ const CompExpr& CompExpr::stretch() const {
 
 	std::string str = new_sub_1.to_string() + op_str + new_sub_2.to_string();
 	CompExpr new_comp{str,new_sub_1,new_sub_2,op};
-	return new_comp.compute_operation();
+	const CompExpr& c = new_comp.compute_operation();
+	return c;
 }
 const CompExpr& CompExpr::extend() const {
 	if(is_extended())
