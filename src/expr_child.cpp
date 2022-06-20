@@ -131,10 +131,8 @@ const CompExpr& CompExpr::compute_operation(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);	// wether the first sub-expression is simple or compound
 	bool is_comp_expr_2 = is_CompExpr(sub_2);	// idem for the second sub-expr
 	
-	if(!is_comp_expr_1 && !is_comp_expr_2){// return a copy of the expression if the sub-expressions are simple
-		
-		return * new CompExpr{sub_1,sub_2,op};
-	}
+	if(!is_comp_expr_1 && !is_comp_expr_2)// return a copy of the expression if the sub-expressions are simple	
+		return * new CompExpr{*this};
 	
 	if(is_comp_expr_1 != is_comp_expr_2){		// if one sub-expr is simple and the other is compound
 		switch(op){
@@ -164,7 +162,7 @@ const CompExpr& CompExpr::sum_simple_comp(){
 	const CompExpr& sub_comp = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 	const ParentExpr& sub    = is_comp_expr_1 ? sub_2 : sub_1;
 	std::string sum = sub.to_string() + " + " + sub_comp.to_string();
-	return * new CompExpr{sum,sub,sub_comp,operation::sum};
+	return * new CompExpr{sum,sub.clone(),sub_comp.clone(),operation::sum};
 }
 
 const CompExpr& CompExpr::compound_sum(){

@@ -18,12 +18,6 @@ int main(int argc, char* argv[]){
 	//const Expr& str = ex.stretch();//ex.stretch() << std::endl;
 	//Expr cex{ex.get_obj().stretch()};
 	//std::cout << cex;
-	//std::cout << 	&ex.get_obj().stretch();
-	CompExpr cex = x + y;
-	//CompExpr cex2 = cex;
-	CompExpr* cex2 = new CompExpr{cex};
-	std::cout << cex << std::endl;
-	std::cout << *cex2 << std::endl;
-	delete cex2;
-	std::cout << cex<<std::endl;
+	Expr ex_s = ex.get_obj().stretch();	
+	std::cout << ex.get_obj().stretch() << std::endl;
 }
