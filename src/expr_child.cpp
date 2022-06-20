@@ -30,30 +30,34 @@ bool VarExpr::is_only_mult() const{
 	return true;
 }
 
+int VarExpr::get_degree(const Var& v) const{
+	return v.get_name().compare(vars[0].get_name()) == 0 ? 1 : 0;
+}
+
 VarExpr::~VarExpr() = default;
 
 bool VarExpr::is_extended() const {
 	return true;
 }
 
-std::map<unsigned int, const ParentExpr&> VarExpr::get_coeffs(const Var& v) const {
-	std::map<unsigned int,const ParentExpr&> coeffs{};
-	bool is_same_var = vars[0].get_name().compare(v.get_name());
+std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) const {
+	std::map<unsigned int,const ParentExpr*> coeffs{};
+	bool is_same_var = vars[0].get_name().compare(v.get_name()) == 0;
 	if(is_same_var){
-		ConstExpr& g_1 = * new ConstExpr{1};
+		ConstExpr* g_1 = new ConstExpr{1};
 		coeffs.insert({1,g_1});
 	}
 	return coeffs;
 }
 
-void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs, const Var& v) const{
+void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
 	bool present = coeffs.find(1) == coeffs.end() ? false : true;
 	if(present){
-		CompExpr& new_coeff = * new CompExpr{coeffs[1],clone(),operation::sum};
+		CompExpr* new_coeff = new CompExpr{*coeffs[1],clone(),operation::sum};
 		coeffs.insert({1,new_coeff});
 	}
 	else{
-		coeffs.insert({1,clone()});
+		coeffs.insert({1,&clone()});
 	}
 }
 
@@ -76,6 +80,14 @@ bool ConstExpr::is_extended() const {
 	return true;
 }
 
+bool ConstExpr::is_only_mult() const{
+	return true;
+}
+
+int ConstExpr::get_degree(const Var& v) const {
+	return 0;
+}
+
 const ConstExpr& ConstExpr::clone() const{
 	return * new ConstExpr{*this};
 }
@@ -83,18 +95,18 @@ const ConstExpr& ConstExpr::clone() const{
 ConstExpr::~ConstExpr() = default;
 
 
-std::map<unsigned int, const ParentExpr&> ConstExpr::get_coeffs(const Var& v) const {
-	return std::map<unsigned int, const ParentExpr&>{};
+std::map<unsigned int, const ParentExpr*> ConstExpr::get_coeffs(const Var& v) const {
+	return std::map<unsigned int, const ParentExpr*>{};
 }
 
-void ConstExpr::insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs, const Var& v) const{
+void ConstExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
 	bool present = coeffs.find(0) == coeffs.end() ? false : true;
 	if(present){
-		CompExpr& new_coeff = * new CompExpr{coeffs[0],clone(),operation::sum};
+		CompExpr* new_coeff = new CompExpr{*coeffs[0],clone(),operation::sum};
 		coeffs.insert({0,new_coeff});
 	}
 	else{
-		coeffs.insert({0,clone()});
+		coeffs.insert({0,&clone()});
 	}
 }
 
@@ -153,8 +165,8 @@ const CompExpr& CompExpr::clone() const{
 	return * new CompExpr{clone_sub_1,clone_sub_2,op};
 }
 
-std::map<unsigned int, const ParentExpr&> ParentExpr::get_coeffs(const Var& v) const {
-	std::map<unsigned int,const ParentExpr&> coeffs{};
+std::map<unsigned int, const ParentExpr*> CompExpr::get_coeffs(const Var& v) const {
+	std::map<unsigned int,const ParentExpr*> coeffs{};
 	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
 	const ParentExpr& ext_sub_1 = extended.get_sub_1();
 	const ParentExpr& ext_sub_2 = extended.get_sub_2();
@@ -174,8 +186,30 @@ std::map<unsigned int, const ParentExpr&> ParentExpr::get_coeffs(const Var& v) c
 	return coeffs;
 }
 
-void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr &> &coeffs, const Var &v){
+void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var &v) const {
+	int degree = get_degree(v);
+	if(degree == 0)
+		return;
+	const ParentExpr& new_monomial = extract_monomial(degree,v);
+	bool present = coeffs.find(degree) == coeffs.end() ? false : true;
+	if(present){
+		CompExpr* new_coeff = new CompExpr{*coeffs[degree],new_monomial,operation::sum};	
+		coeffs.insert({degree,new_coeff});
+	}
+	else{
+		coeffs.insert({degree,&new_monomial});
+	}
+}
 
+int CompExpr::get_degree(const Var& v) const {
+	return sub_1.get_degree(v) + sub_2.get_degree(v);	
+}
+
+const ParentExpr& CompExpr::extract_monomial(int degree, const Var& v) const {
+	if(dynamic_cast<VarExpr*>(&sub_1)){
+		
+	}
+	return *this;
 }
 
 const CompExpr& CompExpr::compute_operation(){

@@ -2,6 +2,7 @@
 #include "var.h"
 #include "expr.h"
 #include <string>
+#include <map>
 
 int main(int argc, char* argv[]){
 
@@ -9,6 +10,11 @@ int main(int argc, char* argv[]){
 	Var y{"y"};
 	Var z{"z"};
 	
-	Expr ex = ((x + y)* 2 + 3) * (z + y);
-	std::cout << ex << " = " << ex.extend() << std::endl;
+	VarExpr ex = x;
+	//std::cout << ex.get_degree(x) << std::endl;
+	std::map<unsigned int, const ParentExpr*> m = ex.get_coeffs(x);
+	for(auto& e : m)
+		std::cout << e.first << ":" << e.second->to_string() << std::endl;
+	
+
 }

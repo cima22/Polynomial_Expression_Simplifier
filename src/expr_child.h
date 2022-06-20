@@ -16,8 +16,9 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		const VarExpr& extend() const override;
 		const VarExpr& clone() const override;
 		bool is_only_mult() const override;
-		std::map<unsigned int,const ParentExpr&> get_coeffs(const Var& v) const override;
-		void insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs,const Var& v) const override;
+		int get_degree(const Var& v) const override;
+		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
+		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
 };
 
 class ConstExpr : public ParentExpr{ // Expression which is composed only by one constant, e.g.: 2
@@ -33,8 +34,9 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		const ConstExpr& extend() const override;
 		const ConstExpr& clone() const override;
 		bool is_only_mult() const override;
-		std::map<unsigned int,const ParentExpr&> get_coeffs(const Var& v) const override;
-		void insert_coeff(std::map<unsigned int, const ParentExpr&>& coeffs,const Var& v) const override;
+		int get_degree(const Var& v) const override;
+		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
+		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
 };
 
 enum class operation {sum, sub, mul};
@@ -62,6 +64,7 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		const CompExpr& mult_mixed();
 
 		bool is_extended() const override;
+		const ParentExpr& extract_monomial(int degree, const Var& v) const;
 
 	public:
 		CompExpr(const ParentExpr& e1, const ParentExpr& e2, operation op);
@@ -76,10 +79,11 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		const operation get_op() const;
 		const ParentExpr& get_sub_1() const;
 		const ParentExpr& get_sub_2() const;
-		std::map<unsigned int,const ParentExpr&> get_coeffs(const Var& x) const override;
-		void insert_coeff(std::map<unsigned int,const ParentExpr&>& coeffs,const Var& v) const override;
+		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& x) const override;
+		void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs,const Var& v) const override;
 		const CompExpr& clone() const override;
 		bool is_only_mult() const override;
+		int get_degree(const Var& v) const override;
 
 		friend const CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend const CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
