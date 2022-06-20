@@ -14,6 +14,7 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		int evaluate() override;
 		const VarExpr& stretch() const override;
 		const VarExpr& extend() const override;
+		const VarExpr& clone() const override;
 		//std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
 };
 
@@ -27,6 +28,7 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		int evaluate() override;
 		const ConstExpr& stretch() const override;
 		const ConstExpr& extend() const override;
+		const ConstExpr& clone() const override;
 		//std::map<unsigned int,&ParentExpr> get_coeffs(const Var& v) const override;
 };
 
@@ -64,6 +66,7 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		CompExpr(const ParentExpr& e1, const ParentExpr& e2, operation op);
 		CompExpr(const std::string& expr, const ParentExpr& e1, const ParentExpr& e2, operation op);
 		CompExpr(const std::string& expr, const std::vector<Var>& vars, const ParentExpr& e1, const ParentExpr& e2, operation op);
+		CompExpr(const CompExpr& comp);
 		virtual ~CompExpr();	
 	
 		int evaluate() override;
@@ -75,6 +78,8 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		const CompExpr& compute_operation();
 		//std::map<unsigned,&ParentExpr> get_coeffs(const Var& x) const override;
 		
+		const CompExpr& clone() const override;
+
 		friend const CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend const CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
 		friend const CompExpr& operator* (const CompExpr& e1, const CompExpr& e2);

@@ -19,7 +19,7 @@ class Expr{
 		Expr &replace(const std::map<Var,Expr>& repl);
 		bool equivalent(const Expr& e1, const Expr& e2);
 		const Expr extend();
-		const Expr stretch();	
+		Expr stretch();	
 		const ParentExpr& get_obj() const;
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& ex);

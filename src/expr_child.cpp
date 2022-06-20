@@ -21,6 +21,10 @@ const VarExpr& VarExpr::extend() const {
 	return *this; 
 }
 
+const VarExpr& VarExpr::clone() const{
+	return * new VarExpr{*this};
+}
+
 VarExpr::~VarExpr() = default;
 
 bool VarExpr::is_extended() const {
@@ -54,6 +58,10 @@ const ConstExpr& ConstExpr::extend() const {
 
 bool ConstExpr::is_extended() const {
 	return true;
+}
+
+const ConstExpr& ConstExpr::clone() const{
+	return * new ConstExpr{*this};
 }
 
 ConstExpr::~ConstExpr() = default;
@@ -104,18 +112,29 @@ CompExpr::CompExpr(const std::string& expr, const std::vector<Var>& vars, const 
 	sub_1{e1},sub_2{e2},op{op},ParentExpr(expr,vars)
 	{}
 
+CompExpr::CompExpr(const CompExpr& comp):
+	sub_1{comp.get_sub_1().clone()},sub_2{comp.get_sub_2().clone()},op{comp.get_op()},ParentExpr(comp){}
+
 const operation CompExpr::get_op() const { return op; }
 
 const ParentExpr& CompExpr::get_sub_1() const { return sub_1; }
 const ParentExpr& CompExpr::get_sub_2() const { return sub_2; }
+
+const CompExpr& CompExpr::clone() const{
+	const ParentExpr& clone_sub_1 = sub_1.clone();
+	const ParentExpr& clone_sub_2 = sub_2.clone();
+	return * new CompExpr{clone_sub_1,clone_sub_2,op};
+}
 
 const CompExpr& CompExpr::compute_operation(){
 	
 	bool is_comp_expr_1 = is_CompExpr(sub_1);	// wether the first sub-expression is simple or compound
 	bool is_comp_expr_2 = is_CompExpr(sub_2);	// idem for the second sub-expr
 	
-	if(!is_comp_expr_1 && !is_comp_expr_2)		// return a copy of the expression if the sub-expressions are simple
+	if(!is_comp_expr_1 && !is_comp_expr_2){// return a copy of the expression if the sub-expressions are simple
+		
 		return * new CompExpr{sub_1,sub_2,op};
+	}
 	
 	if(is_comp_expr_1 != is_comp_expr_2){		// if one sub-expr is simple and the other is compound
 		switch(op){
