@@ -87,15 +87,15 @@ std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, 
 			op_c = '?';
 			break;
 	}
-	
+	/*
 	std::string member_1 = e1.to_string();
 	std::string member_2 = e2.to_string();
 	if(dynamic_cast<const CompExpr*>(&e1))
 		member_1 = "(" + e1.to_string() + ")";
 	if(dynamic_cast<const CompExpr*>(&e2))
 		member_2 = "(" + e2.to_string() + ")";
-
-	return std::string{member_1 + " " + op_c + " " + member_2};
+*/
+	return std::string{e1.to_string() + " " + op_c + " " + e2.to_string()};
 }
 
 bool CompExpr::is_CompExpr(const ParentExpr& ex) const { return dynamic_cast<const CompExpr*>(&ex); }
@@ -161,8 +161,8 @@ const CompExpr& CompExpr::sum_simple_comp(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	const CompExpr& sub_comp = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 	const ParentExpr& sub    = is_comp_expr_1 ? sub_2 : sub_1;
-	std::string sum = sub.to_string() + " + " + sub_comp.to_string();
-	return * new CompExpr{sum,sub.clone(),sub_comp.clone(),operation::sum};
+//	std::string sum = sub.to_string() + " + " + sub_comp.to_string();
+	return * new CompExpr{sub.clone(),sub_comp.clone(),operation::sum};
 }
 
 const CompExpr& CompExpr::compound_sum(){
@@ -182,11 +182,11 @@ const CompExpr& CompExpr::sum_sum(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
-	std::string str_2 = comp_sub_1.get_sub_2().to_string() + " + " + comp_sub_2.to_string();
-	const CompExpr& sum_2 = * new CompExpr{str_2,comp_sub_1.get_sub_2(),comp_sub_2,operation::sum};
+	//std::string str_2 = comp_sub_1.get_sub_2().to_string() + " + " + comp_sub_2.to_string();
+	const CompExpr& sum_2 = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.clone(),operation::sum};
 
-	std::string str_1 = comp_sub_1.get_sub_1().to_string() + " + " + sum_2.to_string();
-	const CompExpr& sum_1 = * new CompExpr{comp_sub_1.get_sub_1(),sum_2,operation::sum};
+	//std::string str_1 = comp_sub_1.get_sub_1().to_string() + " + " + sum_2.to_string();
+	const CompExpr& sum_1 = * new CompExpr{comp_sub_1.get_sub_1().clone(),sum_2,operation::sum};
 
 	return sum_1;
 }
@@ -194,8 +194,8 @@ const CompExpr& CompExpr::sum_sum(){
 const CompExpr& CompExpr::sum_mult(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
-	std::string str = comp_sub_1.to_string() + " + " + comp_sub_2.to_string();
-	return * new CompExpr{str,comp_sub_1,comp_sub_2,operation::sum};
+	//std::string str = comp_sub_1.to_string() + " + " + comp_sub_2.to_string();
+	return * new CompExpr{comp_sub_1.clone(),comp_sub_2.clone(),operation::sum};
 }
 
 const CompExpr& CompExpr::sum_mixed(){
@@ -207,11 +207,11 @@ const CompExpr& CompExpr::sum_mixed(){
 	const ParentExpr& new_sub_1_2 = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
 	const CompExpr& new_mem_2    = is_first_sum ? comp_sub_2 : comp_sub_1;
 
-	std::string str_2 = new_sub_1_2.to_string() + " + " + new_mem_2.to_string();
-	const ParentExpr& sum_2 = * new CompExpr{str_2,new_sub_1_2,new_mem_2,operation::sum};
+	//std::string str_2 = new_sub_1_2.to_string() + " + " + new_mem_2.to_string();
+	const ParentExpr& sum_2 = * new CompExpr{new_sub_1_2.clone(),new_mem_2.clone(),operation::sum};
 
-	std::string str = new_sub_1_1.to_string() + " + " + sum_2.to_string();
-	return * new CompExpr{str,new_sub_1_1,sum_2,operation::sum};
+	//std::string str = new_sub_1_1.to_string() + " + " + sum_2.to_string();
+	return * new CompExpr{new_sub_1_1.clone(),sum_2,operation::sum};
 }
 
 const CompExpr& CompExpr::mult_simple_comp(){
@@ -224,13 +224,12 @@ const CompExpr& CompExpr::mult_simple_comp(){
 			return this->distr_law();
 		case operation::mul:{
 			std::string mem2 = sub_comp.to_string();
-			std::string mul = sub_simple.to_string() + " * " + sub_comp.to_string();
-			return * new CompExpr{mul,this->vars,sub_simple,sub_comp,op};
+			//std::string mul = sub_simple.to_string() + " * " + sub_comp.to_string();
+			return * new CompExpr{sub_simple.clone(),sub_comp.clone(),op};
 		    }
 		default:
-			return *this;
+			return this->clone();
 	}
-
 }
 
 const CompExpr& CompExpr::distr_law(){
@@ -238,14 +237,14 @@ const CompExpr& CompExpr::distr_law(){
 	const CompExpr& comp_sub = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 	const ParentExpr& simple_sub = is_comp_expr_1 ? sub_2 : sub_1;
 
-	std::string mul_1 = simple_sub.to_string() + " * " + comp_sub.get_sub_1().to_string();
-	const ParentExpr& new_sub_1 = * new CompExpr{mul_1,simple_sub,comp_sub.get_sub_1(),operation::mul};
+	//std::string mul_1 = simple_sub.to_string() + " * " + comp_sub.get_sub_1().to_string();
+	const ParentExpr& new_sub_1 = * new CompExpr{simple_sub.clone(),comp_sub.get_sub_1().clone(),operation::mul};
 
-	std::string mul_2 = simple_sub.to_string() + " * " + comp_sub.get_sub_2().to_string();
-	const ParentExpr& new_sub_2 = * new CompExpr{mul_2,simple_sub,comp_sub.get_sub_2(),operation::mul};
+	//std::string mul_2 = simple_sub.to_string() + " * " + comp_sub.get_sub_2().to_string();
+	const ParentExpr& new_sub_2 = * new CompExpr{simple_sub.clone(),comp_sub.get_sub_2().clone(),operation::mul};
 
-	std::string sum = mul_1 + " + " + mul_2;
-	return * new CompExpr{sum,new_sub_1,new_sub_2,operation::sum};
+	//std::string sum = mul_1 + " + " + mul_2;
+	return * new CompExpr{new_sub_1,new_sub_2,operation::sum};
 }
 
 const CompExpr& CompExpr::compound_mult(){
@@ -266,26 +265,26 @@ const CompExpr& CompExpr::mult_sum(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
-	std::string str_1_1   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
-	const CompExpr&   mul_1_1   = * new CompExpr{str_1_1,comp_sub_1.get_sub_1(),comp_sub_2.get_sub_1(),operation::mul};
+	//std::string str_1_1   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
+	const CompExpr&   mul_1_1   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_1().clone(),operation::mul};
 
-	std::string str_1_2   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
-	const CompExpr&   mul_1_2   = * new CompExpr{str_1_2,comp_sub_1.get_sub_1(),comp_sub_2.get_sub_2(),operation::mul};
+	//std::string str_1_2   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
+	const CompExpr&   mul_1_2   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_2().clone(),operation::mul};
 		
-	std::string str_2_1   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
-	const CompExpr&   mul_2_1   = * new CompExpr{str_2_1,comp_sub_1.get_sub_2(),comp_sub_2.get_sub_1(),operation::mul};
+	//std::string str_2_1   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
+	const CompExpr&   mul_2_1   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_1().clone(),operation::mul};
 		
-	std::string str_2_2   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
-	const CompExpr&   mul_2_2   = * new CompExpr{str_2_2,comp_sub_1.get_sub_2(),comp_sub_2.get_sub_2(),operation::mul};
+	//std::string str_2_2   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
+	const CompExpr&   mul_2_2   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_2().clone(),operation::mul};
 		
-	std::string   str_3   = mul_2_1.to_string() + " + " + mul_2_2.to_string();
-	const CompExpr&     sum_3   = * new CompExpr{str_3,mul_2_1,mul_2_2,operation::sum};
+	//std::string   str_3   = mul_2_1.to_string() + " + " + mul_2_2.to_string();
+	const CompExpr&     sum_3   = * new CompExpr{mul_2_1,mul_2_2,operation::sum};
 		
-	std::string   str_2   = mul_1_2.to_string() + " + " + sum_3.to_string();
-	const CompExpr&     sum_2   = * new CompExpr{str_2,mul_1_2,sum_3,operation::sum};
+	//std::string   str_2   = mul_1_2.to_string() + " + " + sum_3.to_string();
+	const CompExpr&     sum_2   = * new CompExpr{mul_1_2,sum_3,operation::sum};
 
-	std::string   str_1   = mul_1_1.to_string() + " + " + sum_2.to_string();
-	const CompExpr&     sum_1   = * new CompExpr{str_1,mul_1_1,sum_2,operation::sum};
+	//std::string   str_1   = mul_1_1.to_string() + " + " + sum_2.to_string();
+	const CompExpr&     sum_1   = * new CompExpr{mul_1_1,sum_2,operation::sum};
 
 	return sum_1;
 }
@@ -294,11 +293,11 @@ const CompExpr& CompExpr::mult_mult(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
-	std::string str_2 = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.to_string();
-	const CompExpr& mul_2 = * new CompExpr{str_2,comp_sub_1.get_sub_2(),comp_sub_2,operation::mul};
+	//std::string str_2 = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.to_string();
+	const CompExpr& mul_2 = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.clone(),operation::mul};
 
-	std::string str_1 = comp_sub_1.get_sub_1().to_string() + " * " + mul_2.to_string();
-	const CompExpr& mul_1 = * new CompExpr{str_1,comp_sub_1.get_sub_1(),mul_2,operation::mul};
+	//std::string str_1 = comp_sub_1.get_sub_1().to_string() + " * " + mul_2.to_string();
+	const CompExpr& mul_1 = * new CompExpr{comp_sub_1.get_sub_1().clone(),mul_2,operation::mul};
 
 	return mul_1;
 }
@@ -312,14 +311,14 @@ const CompExpr& CompExpr::mult_mixed(){
 	const ParentExpr& new_sub_1_2    = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
 	const CompExpr& new_mem_2  = is_first_sum ? comp_sub_2 : comp_sub_1;
 
-	std::string str_1_1  = new_sub_1_1.to_string() + " * " + new_mem_2.to_string();
-	const ParentExpr& new_sub_1      = * new CompExpr{str_1_1,new_sub_1_1,new_mem_2,operation::mul};
+//	std::string str_1_1  = new_sub_1_1.to_string() + " * " + new_mem_2.to_string();
+	const ParentExpr& new_sub_1      = * new CompExpr{new_sub_1_1.clone(),new_mem_2.clone(),operation::mul};
 
-	std::string str_1_2  = new_sub_1_2.to_string() + " * " + new_mem_2.to_string();
-	const ParentExpr& new_sub_2      = * new CompExpr{str_1_2,new_sub_1_2,new_mem_2,operation::mul};
+//	std::string str_1_2  = new_sub_1_2.to_string() + " * " + new_mem_2.to_string();
+	const ParentExpr& new_sub_2      = * new CompExpr{new_sub_1_2.clone(),new_mem_2.clone(),operation::mul};
 
-	std::string str = str_1_1 + " + " + str_1_2;
-	return * new CompExpr{str,new_sub_1,new_sub_2,operation::sum};
+//	std::string str = str_1_1 + " + " + str_1_2;
+	return * new CompExpr{new_sub_1,new_sub_2,operation::sum};
 }
 
 const CompExpr& CompExpr::stretch() const {
@@ -339,15 +338,18 @@ const CompExpr& CompExpr::stretch() const {
 			break;
 	}
 
-	std::string str = new_sub_1.to_string() + op_str + new_sub_2.to_string();
-	CompExpr new_comp{str,new_sub_1,new_sub_2,op};
+	//std::string str = new_sub_1.to_string() + op_str + new_sub_2.to_string();
+	CompExpr new_comp{new_sub_1,new_sub_2,op};
 	const CompExpr& c = new_comp.compute_operation();
 	return c;
 }
 const CompExpr& CompExpr::extend() const {
 	if(is_extended())
-		return *this;
-	return stretch().extend();
+		return this->clone();
+	const CompExpr& str = stretch();
+	CompExpr tmp = str;
+	delete &str;
+	return tmp.extend();
 }
 
 bool CompExpr::is_extended() const {
@@ -454,72 +456,87 @@ const CompExpr& operator* (const Var& v1, const Var& v2){
 
 const CompExpr& operator+ (const CompExpr& e1, int i){
 	ConstExpr* c_e = new ConstExpr{i};
-	return * new const CompExpr{e1,*c_e,operation::sum};
+	std::string str = "(" + e1.to_string() + ") + " + c_e->to_string();
+	return * new const CompExpr{str,e1,*c_e,operation::sum};
 }
 
 const CompExpr& operator+(int i, const CompExpr& e1){
 	ConstExpr* c_e = new ConstExpr{i};
-	return * new const CompExpr{*c_e,e1,operation::sum};
+	std::string str = c_e->to_string() + " + (" + e1.to_string() + ")";
+	return * new const CompExpr{str,*c_e,e1,operation::sum};
 }
 
 const CompExpr& operator- (const CompExpr& e1, int i){
 	ConstExpr* c_e = new ConstExpr{i};
-	return * new const CompExpr{e1,*c_e,operation::sub};
+	std::string str = "(" + e1.to_string() + ") - " + c_e->to_string();
+	return * new const CompExpr{str,e1,*c_e,operation::sub};
 }
 
 const CompExpr& operator-(int i, const CompExpr& e1){
 	ConstExpr* c_e = new ConstExpr{i};
-	return * new const CompExpr{*c_e,e1,operation::sub};
+	std::string str = c_e->to_string() + " -(" + e1.to_string() + ")";
+	return * new const CompExpr{str,*c_e,e1,operation::sub};
 }
 
 const CompExpr& operator* (const CompExpr& e1, int i){
 	const ConstExpr* c_e = new ConstExpr{i};
-	return * new const CompExpr{e1,*c_e,operation::mul};
+	std::string str = "(" + e1.to_string() + ") * " + c_e->to_string();
+	return * new const CompExpr{str,e1,*c_e,operation::mul};
 }
 
 const CompExpr& operator*(int i, const CompExpr& e1){
 	ConstExpr* c_e = new ConstExpr{i};
-	return * new const CompExpr{*c_e,e1,operation::mul};
+	std::string str = c_e->to_string() + " * (" + e1.to_string() + ")";
+	return * new const CompExpr{str,*c_e,e1,operation::mul};
 }
 
 const CompExpr& operator+ (const CompExpr& e1, const Var& v){
 	VarExpr* v_e = new VarExpr{v};
-	return * new const CompExpr{e1,*v_e,operation::sum};
+	std::string str = "(" + e1.to_string() + ") + " + v.get_name();
+	return * new const CompExpr{str,e1,*v_e,operation::sum};
 }
 
 const CompExpr& operator+(const Var& v, const CompExpr& e1){
 	VarExpr* v_e = new VarExpr{v};
-	return * new const CompExpr{*v_e,e1,operation::sum};
+	std::string str = v.get_name() + " + (" + e1.to_string() + ")";
+	return * new const CompExpr{str,*v_e,e1,operation::sum};
 }
 
 const CompExpr& operator- (const CompExpr& e1, const Var& v){
 	VarExpr* v_e = new VarExpr{v};
-	return * new const CompExpr{e1,*v_e,operation::sub};
+	std::string str = "(" + e1.to_string() + ") - " + v.get_name();
+	return * new const CompExpr{str,e1,*v_e,operation::sub};
 }
 
 const CompExpr& operator-(const Var& v, const CompExpr& e1){
 	VarExpr* v_e = new VarExpr{v};
-	return * new const CompExpr{*v_e,e1,operation::sub};
+	std::string str = v.get_name() + " - (" + e1.to_string() + ")";
+	return * new const CompExpr{str,*v_e,e1,operation::sub};
 }
 
 const CompExpr& operator* (const CompExpr& e1, const Var& v){
 	VarExpr* v_e = new VarExpr{v};
-	return * new const CompExpr{e1,*v_e,operation::mul};
+	std::string str = "(" + e1.to_string() + ") * " + v.get_name();
+	return * new const CompExpr{str,e1,*v_e,operation::mul};
 }
 
 const CompExpr& operator*(const Var& v, const CompExpr& e1){
 	VarExpr* v_e = new VarExpr{v};
-	return * new const CompExpr{*v_e,e1,operation::mul};
+	std::string str = v.get_name() + " * (" + e1.to_string() + ")";
+	return * new const CompExpr{str,*v_e,e1,operation::mul};
 }
 
-const CompExpr& operator+(const CompExpr& e1, const CompExpr& e2){ 
-	return * new const CompExpr{e1,e2,operation::sum};
+const CompExpr& operator+(const CompExpr& e1, const CompExpr& e2){
+	std::string str = "(" + e1.to_string() + ") + (" + e2.to_string() + ")"; 
+	return * new const CompExpr{str,e1,e2,operation::sum};
 }
 
 const CompExpr& operator-(const CompExpr& e1, const CompExpr& e2){
-	return * new const CompExpr{e1,e2,operation::sub};
+	std::string str = "(" + e1.to_string() + ") - (" + e2.to_string() + ")"; 
+	return * new const CompExpr{str,e1,e2,operation::sub};
 }
 
 const CompExpr& operator*(const CompExpr& e1, const CompExpr& e2){
-	return * new const CompExpr{e1,e2,operation::mul};
+	std::string str = "(" + e1.to_string() + ") * (" + e2.to_string() + ")"; 
+	return * new const CompExpr{str,e1,e2,operation::mul};
 }
