@@ -21,7 +21,8 @@ class Var{
 		void               set_value(const float new_value);
 		
 		friend std::ostream& operator<< (std::ostream& os, const Var& v);
-
+		friend bool operator< (const Var& v1, const Var& v2);
+		friend bool operator== (const Var& v1, const Var& v2);
 };
 
 #endif

@@ -31,7 +31,8 @@ bool VarExpr::is_only_mult() const{
 }
 
 int VarExpr::get_degree(const Var& v) const{
-	return v.get_name().compare(vars[0].get_name()) == 0 ? 1 : 0;
+	//return v.get_name().compare(vars[0].get_name()) == 0 ? 1 : 0;
+	return v == vars[0] ? 1 : 0;
 }
 
 VarExpr::~VarExpr() = default;
@@ -42,7 +43,7 @@ bool VarExpr::is_extended() const {
 
 std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) const {
 	std::map<unsigned int,const ParentExpr*> coeffs{};
-	bool is_same_var = vars[0].get_name().compare(v.get_name()) == 0;
+	bool is_same_var = v == vars[0];// vars[0].get_name().compare(v.get_name()) == 0;
 	if(is_same_var){
 		ConstExpr* g_1 = new ConstExpr{1};
 		coeffs.insert({1,g_1});
@@ -51,7 +52,7 @@ std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) cons
 }
 
 void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
-	bool is_same_var = to_string().compare(v.get_name()) == 0;
+	bool is_same_var = vars[0] == v;//to_string().compare(v.get_name()) == 0;
 	int degree       = is_same_var ? 1 : 0;
 	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(degree);
 	const ParentExpr* new_sub;
@@ -70,9 +71,17 @@ void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, co
 }
 
 const ParentExpr& VarExpr::extract_monomial(const Var& v) const {
-	if(to_string().compare(v.get_name()) == 0)
+	//if(to_string().compare(v.get_name()) == 0)
+	if(vars[0] == v)
 		return * new ConstExpr{1};
 	return this->clone();
+}
+
+const ParentExpr& VarExpr::replace(const std::map<Var,const ParentExpr*>& repl) const {
+	bool present = repl.find(vars[0]) != repl.end();
+	if(!present)
+		return this->clone();
+	return repl.at(vars[0])->clone();
 }
 
 ConstExpr::ConstExpr(const int i):
@@ -130,6 +139,10 @@ const ConstExpr& ConstExpr::extract_monomial(const Var& v) const {
 	return this->clone();
 }
 
+const ParentExpr& ConstExpr::replace(const std::map<Var,const ParentExpr*>& repl) const {
+	return this->clone();
+}
+
 std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, const operation op){
 	char op_c;
 	switch(op){
@@ -146,14 +159,6 @@ std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, 
 			op_c = '?';
 			break;
 	}
-	/*
-	std::string member_1 = e1.to_string();
-	std::string member_2 = e2.to_string();
-	if(dynamic_cast<const CompExpr*>(&e1))
-		member_1 = "(" + e1.to_string() + ")";
-	if(dynamic_cast<const CompExpr*>(&e2))
-		member_2 = "(" + e2.to_string() + ")";
-*/
 	return std::string{e1.to_string() + " " + op_c + " " + e2.to_string()};
 }
 
@@ -238,12 +243,24 @@ const ParentExpr& CompExpr::extract_monomial(const Var& v) const {
 	if(is_var_1 || is_var_2){
 		const VarExpr& var = is_var_1 ? dynamic_cast<const VarExpr&>(sub_1) : dynamic_cast<const VarExpr&>(sub_2);
 		const ParentExpr& other_sub = is_var_1 ? sub_2 : sub_1;
-		if(var.to_string().compare(v.get_name()) == 0)
+		if(var.get_variables()[0] == v)//if(var.to_string().compare(v.get_name()) == 0)
 			return other_sub.extract_monomial(v);
 		return * new CompExpr{var.clone(),other_sub.extract_monomial(v),operation::mul};
 	
 	}
 	return * new CompExpr{sub_1.extract_monomial(v),sub_2.extract_monomial(v),operation::mul};
+}
+
+const ParentExpr& CompExpr::replace(const std::map<Var,const ParentExpr*>& repl) const {
+	const ParentExpr& new_sub_1 = sub_1.replace(repl);
+	const ParentExpr& new_sub_2 = sub_2.replace(repl);
+	bool is_comp_expr_1 = is_CompExpr(new_sub_1);
+	bool is_comp_expr_2 = is_CompExpr(new_sub_2);
+	std::string str_1 = is_comp_expr_1 ? "(" + new_sub_1.to_string() + ") " : new_sub_1.to_string() + " ";
+	std::string str_2 = is_comp_expr_2 ? " (" + new_sub_2.to_string() + ")" : " " + new_sub_2.to_string();
+	char op_c = get_op() == operation::sum ? '+' : '*';
+	std::string str = str_1 + op_c + str_2; 
+	return * new CompExpr{str,new_sub_1,new_sub_2,get_op()};
 }
 
 const CompExpr& CompExpr::compute_operation(){

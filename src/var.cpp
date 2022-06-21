@@ -21,3 +21,10 @@ std::ostream& operator<< (std::ostream& os, const Var& v){
 	return os;
 }
 
+bool operator< (const Var& v1, const Var& v2){
+	return v1.get_name() < v2.get_name();
+}
+
+bool operator== (const Var& v1, const Var& v2){
+	return v1.get_name() == v2.get_name();
+}

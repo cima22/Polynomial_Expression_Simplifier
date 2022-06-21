@@ -47,6 +47,13 @@ std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
 	return coeff_expr;
 }
 
+Expr Expr::replace(const std::map<Var,Expr>& repl){
+	std::map<Var,const ParentExpr*> inner_repl{};
+	for(auto& e : repl)
+		inner_repl.insert({e.first,&e.second.get_obj()});
+	return Expr{get_obj().replace(inner_repl)};
+}
+
 std::ostream& operator<<(std::ostream& os, const Expr& ex){
  os << *ex.obj;
   return os;

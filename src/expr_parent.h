@@ -31,6 +31,7 @@ class ParentExpr{
 		virtual int	get_degree(const Var& v) const = 0;
 		virtual const ParentExpr& extract_monomial(const Var& v) const = 0;
 		virtual std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const;	
+		virtual const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const = 0;
 		virtual const ParentExpr& clone() const = 0;
 		virtual void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs, const Var& v) const = 0;
 

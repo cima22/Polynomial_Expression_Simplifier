@@ -21,7 +21,7 @@ class Expr{
 		
 		std::vector<Var> get_variables() const;
 		std::map<unsigned int,Expr> get_coeffs(const Var& v);
-		Expr &replace(const std::map<Var,Expr>& repl);
+		Expr replace(const std::map<Var,Expr>& repl);
 		bool equivalent(const Expr& e1, const Expr& e2);
 		const Expr extend();
 		const ParentExpr& get_obj() const;

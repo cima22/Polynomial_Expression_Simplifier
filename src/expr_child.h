@@ -10,12 +10,17 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 	public:
 		VarExpr(const Var& v);
 		virtual ~VarExpr();
+		
 		void set_value(int v);
 		int evaluate() override;
+		
 		const VarExpr& stretch() const override;
 		const VarExpr& extend() const override;
 		const VarExpr& clone() const override;
 		bool is_only_mult() const override;
+		
+		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
+
 		int get_degree(const Var& v) const override;
 		const ParentExpr& extract_monomial(const Var& v) const override;
 		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
@@ -30,11 +35,16 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 	public:
 		ConstExpr(const int i);
 		virtual ~ConstExpr();
+		
 		int evaluate() override;
+		
 		const ConstExpr& stretch() const override;
 		const ConstExpr& extend() const override;
 		const ConstExpr& clone() const override;
 		bool is_only_mult() const override;
+		
+		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
+
 		int get_degree(const Var& v) const override;
 		const ConstExpr& extract_monomial(const Var& v) const override;
 		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
@@ -75,11 +85,16 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		virtual ~CompExpr();	
 	
 		int evaluate() override;
+		
 		const CompExpr& stretch() const override;
 		const CompExpr& extend() const override;
+		
 		const operation get_op() const;
 		const ParentExpr& get_sub_1() const;
 		const ParentExpr& get_sub_2() const;
+		
+		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
+
 		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& x) const override;
 		void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs,const Var& v) const override;
 		const CompExpr& clone() const override;
