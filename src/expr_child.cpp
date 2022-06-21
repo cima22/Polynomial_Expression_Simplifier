@@ -188,7 +188,7 @@ const CompExpr& CompExpr::clone() const{
 std::map<unsigned int, const ParentExpr*> CompExpr::get_coeffs(const Var& v) const {
 	std::map<unsigned int,const ParentExpr*> coeffs{};
 	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
-	switch(op){
+	switch(extended.get_op()){
 		case operation::mul:
 			extended.insert_coeff(coeffs,v);
 			break;
@@ -207,10 +207,12 @@ std::map<unsigned int, const ParentExpr*> CompExpr::get_coeffs(const Var& v) con
 				ext_sub_1.insert_coeff(coeffs,v);
 			if(is_only_mult_2)
 				ext_sub_2.insert_coeff(coeffs,v);
+			break;
 		}
 		default:
 			break;
 	}
+	delete &extended;
 	return coeffs;
 }
 

@@ -38,11 +38,15 @@ std::vector<Var> Expr::get_variables() const{
 const Expr Expr::extend(){
 	return Expr{obj->extend()};
 }
-/*
+
 std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
-	return 0;	
+	std::map<unsigned int, const ParentExpr*> coeffs = obj->get_coeffs(v);	
+	std::map<unsigned int, Expr> coeff_expr{};
+	for(auto& e : coeffs)
+		coeff_expr.insert({e.first,Expr{e.second}});
+	return coeff_expr;
 }
-*/
+
 std::ostream& operator<<(std::ostream& os, const Expr& ex){
  os << *ex.obj;
   return os;
