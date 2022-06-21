@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
 	
 	VarExpr vx = x;
 	ConstExpr c = 2;
-	CompExpr ex = (2 * x * y * 3 * x) + x + 4 + x * x;
+	CompExpr ex = (2 * x * y * 3 * x) + x ;//+ 4 + x * x;
 	std::map<unsigned int,const ParentExpr*> m{};
 	m = ex.get_coeffs(y);
 	for(auto& e : m)

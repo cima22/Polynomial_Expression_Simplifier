@@ -7,7 +7,7 @@ DBG_FLAG = -g
 SRC_PATH = src
 OBJ_PATH = obj
 BIN_PATH = bin
-DBG_PATh = debug
+DBG_PATH = debug
 
 try: $(OBJ_PATH)/main.o $(OBJ_PATH)/expr.o $(OBJ_PATH)/var.o $(OBJ_PATH)/expr_parent.o $(OBJ_PATH)/expr_child.o
 	$(CC) -o $(BIN_PATH)/out.x $(OBJ_PATH)/main.o $(OBJ_PATH)/expr.o $(OBJ_PATH)/var.o $(OBJ_PATH)/expr_parent.o $(OBJ_PATH)/expr_child.o

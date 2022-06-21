@@ -52,8 +52,8 @@ std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) cons
 
 void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
 	bool is_same_var = to_string().compare(v.get_name()) == 0;
-	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(1);
 	int degree       = is_same_var ? 1 : 0;
+	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(degree);
 	const ParentExpr* new_sub;
 	if(is_same_var)
 		new_sub = new ConstExpr{1};
