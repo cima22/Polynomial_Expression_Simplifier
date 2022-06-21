@@ -17,6 +17,7 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		const VarExpr& clone() const override;
 		bool is_only_mult() const override;
 		int get_degree(const Var& v) const override;
+		const ParentExpr& extract_monomial(const Var& v) const override;
 		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
 		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
 };
@@ -35,6 +36,7 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		const ConstExpr& clone() const override;
 		bool is_only_mult() const override;
 		int get_degree(const Var& v) const override;
+		const ConstExpr& extract_monomial(const Var& v) const override;
 		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
 		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
 };
@@ -64,7 +66,6 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		const CompExpr& mult_mixed();
 
 		bool is_extended() const override;
-		const ParentExpr& extract_monomial(int degree, const Var& v) const;
 
 	public:
 		CompExpr(const ParentExpr& e1, const ParentExpr& e2, operation op);
@@ -84,6 +85,7 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		const CompExpr& clone() const override;
 		bool is_only_mult() const override;
 		int get_degree(const Var& v) const override;
+		const ParentExpr& extract_monomial(const Var& v) const override;
 
 		friend const CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend const CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);

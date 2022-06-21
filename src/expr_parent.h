@@ -29,6 +29,7 @@ class ParentExpr{
 		virtual bool 	is_extended() 		 const = 0;
 		virtual bool 	is_only_mult() 		 const = 0;
 		virtual int	get_degree(const Var& v) const = 0;
+		virtual const ParentExpr& extract_monomial(const Var& v) const = 0;
 		virtual std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const;	
 		virtual const ParentExpr& clone() const = 0;
 		virtual void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs, const Var& v) const = 0;

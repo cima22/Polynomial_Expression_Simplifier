@@ -51,14 +51,28 @@ std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) cons
 }
 
 void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
-	bool present = coeffs.find(1) == coeffs.end() ? false : true;
-	if(present){
-		CompExpr* new_coeff = new CompExpr{*coeffs[1],clone(),operation::sum};
-		coeffs.insert({1,new_coeff});
+	bool is_same_var = to_string().compare(v.get_name()) == 0;
+	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(1);
+	int degree       = is_same_var ? 1 : 0;
+	const ParentExpr* new_sub;
+	if(is_same_var)
+		new_sub = new ConstExpr{1};
+	else{
+		new_sub = &clone();
+	}
+	if(present != coeffs.end()){
+		const ParentExpr* new_coeff = new CompExpr{*coeffs[degree],*new_sub,operation::sum};
+		present->second = new_coeff;
 	}
 	else{
-		coeffs.insert({1,&clone()});
+		coeffs.insert({degree,new_sub});
 	}
+}
+
+const ParentExpr& VarExpr::extract_monomial(const Var& v) const {
+	if(to_string().compare(v.get_name()) == 0)
+		return * new ConstExpr{1};
+	return this->clone();
 }
 
 ConstExpr::ConstExpr(const int i):
@@ -100,14 +114,20 @@ std::map<unsigned int, const ParentExpr*> ConstExpr::get_coeffs(const Var& v) co
 }
 
 void ConstExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
-	bool present = coeffs.find(0) == coeffs.end() ? false : true;
-	if(present){
-		CompExpr* new_coeff = new CompExpr{*coeffs[0],clone(),operation::sum};
-		coeffs.insert({0,new_coeff});
+	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(0);
+	const ParentExpr* new_coeff;
+	if(present != coeffs.end()){
+		new_coeff = new CompExpr{*coeffs[0],clone(),operation::sum};
+		present->second = new_coeff;
 	}
 	else{
-		coeffs.insert({0,&clone()});
+		new_coeff = &clone();
+		coeffs.insert({0,new_coeff});
 	}
+}
+
+const ConstExpr& ConstExpr::extract_monomial(const Var& v) const {
+	return this->clone();
 }
 
 std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, const operation op){
@@ -168,48 +188,60 @@ const CompExpr& CompExpr::clone() const{
 std::map<unsigned int, const ParentExpr*> CompExpr::get_coeffs(const Var& v) const {
 	std::map<unsigned int,const ParentExpr*> coeffs{};
 	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
-	const ParentExpr& ext_sub_1 = extended.get_sub_1();
-	const ParentExpr& ext_sub_2 = extended.get_sub_2();
-	bool is_only_mult_1 = ext_sub_1.is_only_mult();
-	bool is_only_mult_2 = ext_sub_2.is_only_mult();
+	switch(op){
+		case operation::mul:
+			extended.insert_coeff(coeffs,v);
+			break;
+		case operation::sum:{
+			const ParentExpr& ext_sub_1 = extended.get_sub_1();
+			const ParentExpr& ext_sub_2 = extended.get_sub_2();
+			bool is_only_mult_1 = ext_sub_1.is_only_mult();
+			bool is_only_mult_2 = ext_sub_2.is_only_mult();
 
-	if(is_only_mult_1 != is_only_mult_2){
-		const ParentExpr& ext_sub = is_only_mult_1 ? ext_sub_2 : ext_sub_1; 
-		coeffs = ext_sub.get_coeffs(v);
-	}
+			if(is_only_mult_1 != is_only_mult_2){
+				const ParentExpr& ext_sub = is_only_mult_1 ? ext_sub_2 : ext_sub_1; 
+				coeffs = ext_sub.get_coeffs(v);
+			}
 	
-	if(is_only_mult_1)
-		ext_sub_1.insert_coeff(coeffs,v);
-	if(is_only_mult_2)
-		ext_sub_2.insert_coeff(coeffs,v);
-
+			if(is_only_mult_1)
+				ext_sub_1.insert_coeff(coeffs,v);
+			if(is_only_mult_2)
+				ext_sub_2.insert_coeff(coeffs,v);
+		}
+		default:
+			break;
+	}
 	return coeffs;
 }
 
 void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var &v) const {
 	int degree = get_degree(v);
-	if(degree == 0)
-		return;
-	const ParentExpr& new_monomial = extract_monomial(degree,v);
-	bool present = coeffs.find(degree) == coeffs.end() ? false : true;
-	if(present){
-		CompExpr* new_coeff = new CompExpr{*coeffs[degree],new_monomial,operation::sum};	
-		coeffs.insert({degree,new_coeff});
+	const ParentExpr& new_monomial = extract_monomial(v);
+	std::map<unsigned int,const ParentExpr*>::iterator present = coeffs.find(degree);
+	const ParentExpr* new_coeff = &new_monomial;
+	if(present != coeffs.end()){
+		new_coeff = new CompExpr{*coeffs[degree],new_monomial,operation::sum};
+		present->second = new_coeff;
 	}
-	else{
-		coeffs.insert({degree,&new_monomial});
-	}
+	coeffs.insert({degree,new_coeff});
 }
 
 int CompExpr::get_degree(const Var& v) const {
 	return sub_1.get_degree(v) + sub_2.get_degree(v);	
 }
 
-const ParentExpr& CompExpr::extract_monomial(int degree, const Var& v) const {
-	if(dynamic_cast<VarExpr*>(&sub_1)){
-		
+const ParentExpr& CompExpr::extract_monomial(const Var& v) const {
+	bool is_var_1 = dynamic_cast<const VarExpr*>(&sub_1);
+	bool is_var_2 = dynamic_cast<const VarExpr*>(&sub_2);
+	if(is_var_1 || is_var_2){
+		const VarExpr& var = is_var_1 ? dynamic_cast<const VarExpr&>(sub_1) : dynamic_cast<const VarExpr&>(sub_2);
+		const ParentExpr& other_sub = is_var_1 ? sub_2 : sub_1;
+		if(var.to_string().compare(v.get_name()) == 0)
+			return other_sub.extract_monomial(v);
+		return * new CompExpr{var.clone(),other_sub.extract_monomial(v),operation::mul};
+	
 	}
-	return *this;
+	return * new CompExpr{sub_1.extract_monomial(v),sub_2.extract_monomial(v),operation::mul};
 }
 
 const CompExpr& CompExpr::compute_operation(){
