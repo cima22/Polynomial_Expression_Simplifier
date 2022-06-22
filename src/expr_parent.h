@@ -30,12 +30,20 @@ class ParentExpr{
 		virtual bool 	is_only_mult() 		 const = 0;
 		virtual int	get_degree(const Var& v) const = 0;
 		virtual const ParentExpr& extract_monomial(const Var& v) const = 0;
-		virtual std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const;	
+		virtual std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const = 0;	
 		virtual const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const = 0;
 		virtual const ParentExpr& clone() const = 0;
 		virtual void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs, const Var& v) const = 0;
 
 		friend std::ostream& operator<<(std::ostream& os, const ParentExpr& expr);
-		friend bool operator== (const ParentExpr& e1, const ParentExpr& e2);
+		friend bool equal (const ParentExpr& e1, const ParentExpr& e2);
+		virtual int get_monomial_const() const = 0;
+		virtual const ParentExpr& extend_and_group() const = 0;
+		virtual std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const = 0;
+		void insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned int>>>& vec) const;
+		virtual std::pair<int,std::map<Var,unsigned int>> get_monomial() const = 0;
+		virtual const ParentExpr& unroll() const = 0;
 };
+
+bool are_same_type(const ParentExpr& e1, const ParentExpr& e2);
 #endif

@@ -2,6 +2,8 @@
 #include "expr_parent.h"
 #include <string>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 VarExpr::VarExpr(const Var& v):
 	ParentExpr(v.get_name(),{v}){}
@@ -84,6 +86,8 @@ const ParentExpr& VarExpr::replace(const std::map<Var,const ParentExpr*>& repl) 
 	return repl.at(vars[0])->clone();
 }
 
+bool VarExpr::is_VarExpr(const ParentExpr& ex){ return dynamic_cast<const VarExpr*>(&ex); }
+
 ConstExpr::ConstExpr(const int i):
 	value{i},ParentExpr(std::to_string(i)){}
 
@@ -143,6 +147,8 @@ const ParentExpr& ConstExpr::replace(const std::map<Var,const ParentExpr*>& repl
 	return this->clone();
 }
 
+bool ConstExpr::is_ConstExpr(const ParentExpr& ex){ return dynamic_cast<const ConstExpr*>(&ex); }
+
 std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, const operation op){
 	char op_c;
 	switch(op){
@@ -162,7 +168,7 @@ std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, 
 	return std::string{e1.to_string() + " " + op_c + " " + e2.to_string()};
 }
 
-bool CompExpr::is_CompExpr(const ParentExpr& ex) const { return dynamic_cast<const CompExpr*>(&ex); }
+bool CompExpr::is_CompExpr(const ParentExpr& ex) { return dynamic_cast<const CompExpr*>(&ex); }
 
 CompExpr::CompExpr(const ParentExpr& e1, const ParentExpr& e2, const operation op):
 	sub_1{e1}, sub_2{e2}, op{op}, ParentExpr(create_string(e1,e2,op))
@@ -178,6 +184,16 @@ CompExpr::CompExpr(const std::string& expr, const std::vector<Var>& vars, const 
 
 CompExpr::CompExpr(const CompExpr& comp):
 	sub_1{comp.get_sub_1().clone()},sub_2{comp.get_sub_2().clone()},op{comp.get_op()},ParentExpr(comp){}
+
+
+const ParentExpr& CompExpr::create_monomial(const Var& v, unsigned int degree) {
+	if(degree == 0)
+		return * new ConstExpr{1};
+	const VarExpr& var = * new VarExpr{v};
+	if(degree == 1)
+		return var;
+	return * new CompExpr{var,create_monomial(v,degree - 1),operation::mul};
+};
 
 const operation CompExpr::get_op() const { return op; }
 
@@ -298,7 +314,6 @@ const CompExpr& CompExpr::sum_simple_comp(){
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	const CompExpr& sub_comp = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 	const ParentExpr& sub    = is_comp_expr_1 ? sub_2 : sub_1;
-//	std::string sum = sub.to_string() + " + " + sub_comp.to_string();
 	return * new CompExpr{sub.clone(),sub_comp.clone(),operation::sum};
 }
 
@@ -319,10 +334,8 @@ const CompExpr& CompExpr::sum_sum(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
-	//std::string str_2 = comp_sub_1.get_sub_2().to_string() + " + " + comp_sub_2.to_string();
 	const CompExpr& sum_2 = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.clone(),operation::sum};
 
-	//std::string str_1 = comp_sub_1.get_sub_1().to_string() + " + " + sum_2.to_string();
 	const CompExpr& sum_1 = * new CompExpr{comp_sub_1.get_sub_1().clone(),sum_2,operation::sum};
 
 	return sum_1;
@@ -331,7 +344,6 @@ const CompExpr& CompExpr::sum_sum(){
 const CompExpr& CompExpr::sum_mult(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
-	//std::string str = comp_sub_1.to_string() + " + " + comp_sub_2.to_string();
 	return * new CompExpr{comp_sub_1.clone(),comp_sub_2.clone(),operation::sum};
 }
 
@@ -344,10 +356,8 @@ const CompExpr& CompExpr::sum_mixed(){
 	const ParentExpr& new_sub_1_2 = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
 	const CompExpr& new_mem_2    = is_first_sum ? comp_sub_2 : comp_sub_1;
 
-	//std::string str_2 = new_sub_1_2.to_string() + " + " + new_mem_2.to_string();
 	const ParentExpr& sum_2 = * new CompExpr{new_sub_1_2.clone(),new_mem_2.clone(),operation::sum};
 
-	//std::string str = new_sub_1_1.to_string() + " + " + sum_2.to_string();
 	return * new CompExpr{new_sub_1_1.clone(),sum_2,operation::sum};
 }
 
@@ -374,13 +384,9 @@ const CompExpr& CompExpr::distr_law(){
 	const CompExpr& comp_sub = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 	const ParentExpr& simple_sub = is_comp_expr_1 ? sub_2 : sub_1;
 
-	//std::string mul_1 = simple_sub.to_string() + " * " + comp_sub.get_sub_1().to_string();
 	const ParentExpr& new_sub_1 = * new CompExpr{simple_sub.clone(),comp_sub.get_sub_1().clone(),operation::mul};
-
-	//std::string mul_2 = simple_sub.to_string() + " * " + comp_sub.get_sub_2().to_string();
 	const ParentExpr& new_sub_2 = * new CompExpr{simple_sub.clone(),comp_sub.get_sub_2().clone(),operation::mul};
 
-	//std::string sum = mul_1 + " + " + mul_2;
 	return * new CompExpr{new_sub_1,new_sub_2,operation::sum};
 }
 
@@ -402,25 +408,14 @@ const CompExpr& CompExpr::mult_sum(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
-	//std::string str_1_1   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
 	const CompExpr&   mul_1_1   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_1().clone(),operation::mul};
-
-	//std::string str_1_2   = comp_sub_1.get_sub_1().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
 	const CompExpr&   mul_1_2   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_2().clone(),operation::mul};
 		
-	//std::string str_2_1   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_1().to_string();
 	const CompExpr&   mul_2_1   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_1().clone(),operation::mul};
-		
-	//std::string str_2_2   = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.get_sub_2().to_string();
 	const CompExpr&   mul_2_2   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_2().clone(),operation::mul};
 		
-	//std::string   str_3   = mul_2_1.to_string() + " + " + mul_2_2.to_string();
 	const CompExpr&     sum_3   = * new CompExpr{mul_2_1,mul_2_2,operation::sum};
-		
-	//std::string   str_2   = mul_1_2.to_string() + " + " + sum_3.to_string();
 	const CompExpr&     sum_2   = * new CompExpr{mul_1_2,sum_3,operation::sum};
-
-	//std::string   str_1   = mul_1_1.to_string() + " + " + sum_2.to_string();
 	const CompExpr&     sum_1   = * new CompExpr{mul_1_1,sum_2,operation::sum};
 
 	return sum_1;
@@ -430,10 +425,8 @@ const CompExpr& CompExpr::mult_mult(){
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
-	//std::string str_2 = comp_sub_1.get_sub_2().to_string() + " * " + comp_sub_2.to_string();
 	const CompExpr& mul_2 = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.clone(),operation::mul};
 
-	//std::string str_1 = comp_sub_1.get_sub_1().to_string() + " * " + mul_2.to_string();
 	const CompExpr& mul_1 = * new CompExpr{comp_sub_1.get_sub_1().clone(),mul_2,operation::mul};
 
 	return mul_1;
@@ -448,34 +441,16 @@ const CompExpr& CompExpr::mult_mixed(){
 	const ParentExpr& new_sub_1_2    = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
 	const CompExpr& new_mem_2  = is_first_sum ? comp_sub_2 : comp_sub_1;
 
-//	std::string str_1_1  = new_sub_1_1.to_string() + " * " + new_mem_2.to_string();
 	const ParentExpr& new_sub_1      = * new CompExpr{new_sub_1_1.clone(),new_mem_2.clone(),operation::mul};
 
-//	std::string str_1_2  = new_sub_1_2.to_string() + " * " + new_mem_2.to_string();
 	const ParentExpr& new_sub_2      = * new CompExpr{new_sub_1_2.clone(),new_mem_2.clone(),operation::mul};
 
-//	std::string str = str_1_1 + " + " + str_1_2;
 	return * new CompExpr{new_sub_1,new_sub_2,operation::sum};
 }
 
 const CompExpr& CompExpr::stretch() const {
 	const ParentExpr& new_sub_1 = sub_1.stretch();
 	const ParentExpr& new_sub_2 = sub_2.stretch();
-	
-	std::string op_str;
-	switch(op){
-		case operation::sum:
-			op_str = " + ";
-			break;
-		case operation::mul:
-			op_str = " * ";
-			break;
-		default:
-			op_str = " ? ";
-			break;
-	}
-
-	//std::string str = new_sub_1.to_string() + op_str + new_sub_2.to_string();
 	CompExpr new_comp{new_sub_1,new_sub_2,op};
 	const CompExpr& c = new_comp.compute_operation();
 	return c;
@@ -540,6 +515,149 @@ int CompExpr::evaluate(){
 CompExpr::~CompExpr(){
 	delete &sub_1;
 	delete &sub_2;
+}
+
+bool are_same_type(const ParentExpr& e1, const ParentExpr& e2){
+	return (VarExpr::is_VarExpr(e1) && VarExpr::is_VarExpr(e2)) || 
+	       (ConstExpr::is_ConstExpr(e1) && ConstExpr::is_ConstExpr(e2)) ||
+	       (CompExpr::is_CompExpr(e1) && CompExpr::is_CompExpr(e2));
+}
+
+bool are_equal(const ParentExpr& e1, const ParentExpr& e2){
+	if(!are_same_type(e1,e2))
+		return false;
+
+}
+
+const ParentExpr& CompExpr::extend_and_group() const {
+	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
+	if(extended.get_op() == operation::mul)
+		return ordered_monomial();
+	return * new CompExpr{extended.get_sub_1().extend_and_group(),extended.get_sub_2().extend_and_group(),operation::sum};
+}
+
+const ParentExpr& VarExpr:: extend_and_group() const {
+	return clone();
+}
+
+const ParentExpr& ConstExpr:: extend_and_group() const {
+	return clone();
+}
+
+const ParentExpr& CompExpr::ordered_monomial() const {
+	return create_monomial(get_monomial());
+}
+
+std::pair<int,std::map<Var,unsigned int>> CompExpr::get_monomial() const{
+	std::pair<int,std::map<Var,unsigned int>> monomial{};
+	monomial.first = get_monomial_const();
+	std::map<Var,unsigned int> degrees{};
+	for(auto& v : vars)
+		degrees.insert({v,get_degree(v)});
+	monomial.second = degrees;
+	return monomial;
+}
+
+std::pair<int,std::map<Var,unsigned int>> VarExpr::get_monomial() const{
+	std::map<Var,unsigned int> degree = {{vars[0],1}};
+	std::pair<int,std::map<Var,unsigned int>> monomial{1,degree};
+	return monomial;
+}
+
+std::pair<int,std::map<Var,unsigned int>> ConstExpr::get_monomial() const{
+	std::map<Var,unsigned int> degree{};
+	std::pair<int,std::map<Var,unsigned int>> monomial{value,degree};
+	return monomial;
+}
+
+const ParentExpr& CompExpr::create_monomial(std::pair<int,std::map<Var,unsigned int>> monomial) {
+	std::queue<const ParentExpr*> tmp_monomials{};
+	for(auto& e : monomial.second)
+		tmp_monomials.push(&create_monomial(e.first, e.second));
+	const ParentExpr* tmp_monomial = new ConstExpr{monomial.first};
+	if(monomial.first == 1 && !tmp_monomials.empty()){
+		delete tmp_monomial;
+		tmp_monomial = tmp_monomials.front();
+		tmp_monomials.pop();
+	}
+	while(!tmp_monomials.empty()){
+		tmp_monomial = new CompExpr{*tmp_monomial,*tmp_monomials.front(),operation::mul};
+		tmp_monomials.pop();
+	}
+	return *tmp_monomial;
+}
+
+std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_monomials() const {
+	std::vector<std::pair<int,std::map<Var,unsigned int>>> vec{};
+	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
+	switch(extended.get_op()){
+		case operation::mul:
+			vec.push_back(extended.get_monomial());
+			break;
+		case operation::sum:{
+			const ParentExpr& ext_sub_1 = extended.get_sub_1();
+			const ParentExpr& ext_sub_2 = extended.get_sub_2();
+			bool is_only_mult_1 = ext_sub_1.is_only_mult();
+			bool is_only_mult_2 = ext_sub_2.is_only_mult();
+
+			if(is_only_mult_1 != is_only_mult_2){
+				const ParentExpr& ext_sub = is_only_mult_1 ? ext_sub_2 : ext_sub_1; 
+				vec = ext_sub.get_vector_of_monomials();
+			}
+			if(is_only_mult_1)
+				ext_sub_1.insert_monomial(vec);
+			if(is_only_mult_2)
+				ext_sub_2.insert_monomial(vec);
+			break;
+		}
+		default:
+			break;
+	}
+	delete &extended;
+	return vec;
+}
+
+void ParentExpr::insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned int>>>& vec) const {
+	std::pair<int,std::map<Var,unsigned int>> monomial = get_monomial();
+	for(auto& e : vec)
+		if(e.second == monomial.second){
+			e.first += monomial.first;
+			return;
+		}
+	vec.push_back(monomial);
+
+}
+
+std::vector<std::pair<int,std::map<Var,unsigned int>>> VarExpr::get_vector_of_monomials() const {
+	std::vector<std::pair<int,std::map<Var,unsigned int>>> q;
+	q.push_back(get_monomial());
+	return q;
+}
+
+std::vector<std::pair<int,std::map<Var,unsigned int>>> ConstExpr::get_vector_of_monomials() const {
+	std::vector<std::pair<int,std::map<Var,unsigned int>>> q;
+	q.push_back(get_monomial());
+	return q;
+}
+
+int CompExpr:: get_monomial_const() const { return sub_1.get_monomial_const() * sub_2.get_monomial_const();}
+int VarExpr::  get_monomial_const() const { return 1; }
+int ConstExpr::get_monomial_const() const { return value;}
+
+const ParentExpr& CompExpr::unroll() const{
+	std::vector<std::pair<int,std::map<Var,unsigned int>>> q = get_vector_of_monomials();
+	const ParentExpr* polynomial = &create_monomial(q[0]);
+	for(int i = 1; i < q.size(); i++)
+		polynomial = new CompExpr{create_monomial(q[i]),*polynomial,operation::sum};
+	return *polynomial;
+}
+
+const ParentExpr& ConstExpr::unroll() const {
+	return clone();
+}
+
+const ParentExpr& VarExpr::unroll() const {
+	return clone();
 }
 
 // operators ---------------------------------------------------------------------------

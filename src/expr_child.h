@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <queue>
 
 class VarExpr : public ParentExpr{ // Expression which is composed only by one variable, e.g.: x
 	private:
@@ -18,13 +19,20 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		const VarExpr& extend() const override;
 		const VarExpr& clone() const override;
 		bool is_only_mult() const override;
-		
+
 		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
 
 		int get_degree(const Var& v) const override;
 		const ParentExpr& extract_monomial(const Var& v) const override;
 		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
 		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
+		
+		static bool is_VarExpr(const ParentExpr& ex);
+		int get_monomial_const() const override;
+		std::pair<int,std::map<Var,unsigned int>> get_monomial() const override;
+		const ParentExpr& extend_and_group() const override;
+		std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const override;
+		const ParentExpr& unroll() const override;
 };
 
 class ConstExpr : public ParentExpr{ // Expression which is composed only by one constant, e.g.: 2
@@ -49,6 +57,14 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		const ConstExpr& extract_monomial(const Var& v) const override;
 		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
 		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
+		
+		static bool is_ConstExpr(const ParentExpr& ex);
+
+		int get_monomial_const() const override;
+		std::pair<int,std::map<Var,unsigned int>> get_monomial() const override;
+		const ParentExpr& extend_and_group() const override;
+		std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const override;
+		const ParentExpr& unroll() const override;
 };
 
 enum class operation {sum, sub, mul};
@@ -60,7 +76,6 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		operation op;
 
 		std::string create_string(const ParentExpr& e1, const ParentExpr& e2, operation op);
-		bool is_CompExpr(const ParentExpr& ex) const;
 			
 		const CompExpr& compute_operation();
 		const CompExpr& sum_simple_comp();
@@ -101,6 +116,16 @@ class CompExpr : public ParentExpr{ // Exression which is composed by the sum, s
 		bool is_only_mult() const override;
 		int get_degree(const Var& v) const override;
 		const ParentExpr& extract_monomial(const Var& v) const override;
+
+		static bool is_CompExpr(const ParentExpr& ex);
+		static const ParentExpr& create_monomial(const Var& v, unsigned int degree);
+		static const ParentExpr& create_monomial(std::pair<int,std::map<Var,unsigned int>> monomial);
+		std::pair<int,std::map<Var,unsigned int>> get_monomial() const override;
+		int get_monomial_const() const override;
+		const ParentExpr& ordered_monomial() const;
+		const ParentExpr& extend_and_group() const override;
+		std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const override;
+		const ParentExpr& unroll() const override;
 
 		friend const CompExpr& operator+ (const CompExpr& e1, const CompExpr& e2);
 		friend const CompExpr& operator- (const CompExpr& e1, const CompExpr& e2);
