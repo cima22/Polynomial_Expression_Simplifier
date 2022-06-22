@@ -28,5 +28,7 @@ class Expr{
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& ex);
 		Expr& operator=(CompExpr& e1);
+
+		friend bool equivalent(const Expr& e1, const Expr& e2);
 	};
 

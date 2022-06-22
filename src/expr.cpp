@@ -47,6 +47,10 @@ std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
 	return coeff_expr;
 }
 
+bool equivalent(const Expr& e1, const Expr& e2){
+	return false;
+}
+
 Expr Expr::replace(const std::map<Var,Expr>& repl){
 	std::map<Var,const ParentExpr*> inner_repl{};
 	for(auto& e : repl)

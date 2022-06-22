@@ -36,6 +36,6 @@ class ParentExpr{
 		virtual void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs, const Var& v) const = 0;
 
 		friend std::ostream& operator<<(std::ostream& os, const ParentExpr& expr);
+		friend bool operator== (const ParentExpr& e1, const ParentExpr& e2);
 };
-
 #endif
