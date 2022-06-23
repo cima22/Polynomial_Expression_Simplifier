@@ -1,6 +1,6 @@
 #include "expr.h"
 
-// Constructors for Expr
+// Constructors
 
 Expr::Expr() = default;
 
@@ -50,20 +50,20 @@ std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
 	return coeff_expr;
 }
 
-bool equivalent(const Expr& e1, const Expr& e2){
+bool equivalent(const Expr& e1, const Expr& e2){ // if two expressions are composed of the same monomials, then they are equal
 	std::vector<std::pair<int,std::map<Var,unsigned int>>> v1 = e1.obj->get_vector_of_monomials();
 	std::vector<std::pair<int,std::map<Var,unsigned int>>> v2 = e2.obj->get_vector_of_monomials();
 	return std::is_permutation(v1.begin(),v1.end(),v2.begin());
 }
 
 Expr Expr::replace(const std::map<Var,Expr>& repl){
-	std::map<Var,const ParentExpr*> inner_repl{};
+	std::map<Var,const ParentExpr*> inner_repl{}; // map to be used in the ParentExpr method replace
 	for(auto& e : repl)
 		inner_repl.insert({e.first,&e.second.get_obj()});
 	return Expr{get_obj().replace(inner_repl)};
 }
 
 std::ostream& operator<<(std::ostream& os, const Expr& ex){
- os << *ex.obj;
+ os << *ex.obj; // use the operator defined in ParentExpr
   return os;
 }
