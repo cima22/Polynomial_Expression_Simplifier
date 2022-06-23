@@ -1,5 +1,4 @@
 #include "expr.h"
-#include <vector>
 
 Expr::Expr() = default;
 
@@ -34,9 +33,13 @@ const ParentExpr& Expr::get_obj() const{
 std::vector<Var> Expr::get_variables() const{
 	return obj->get_variables();
 }
-
+/*
 const Expr Expr::extend(){
 	return Expr{obj->extend()};
+}
+*/
+const Expr Expr::unroll(){
+	return Expr{obj->unroll()};
 }
 
 std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
@@ -48,7 +51,9 @@ std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
 }
 
 bool equivalent(const Expr& e1, const Expr& e2){
-	return false;
+	std::vector<std::pair<int,std::map<Var,unsigned int>>> v1 = e1.obj->get_vector_of_monomials();
+	std::vector<std::pair<int,std::map<Var,unsigned int>>> v2 = e2.obj->get_vector_of_monomials();
+	return std::is_permutation(v1.begin(),v1.end(),v2.begin());
 }
 
 Expr Expr::replace(const std::map<Var,Expr>& repl){
