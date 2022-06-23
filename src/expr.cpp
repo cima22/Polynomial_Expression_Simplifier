@@ -1,5 +1,7 @@
 #include "expr.h"
 
+// Constructors for Expr
+
 Expr::Expr() = default;
 
 Expr::Expr(const Expr& expr) = default;
@@ -26,6 +28,8 @@ Expr::Expr(const ParentExpr& expr){
 	obj.reset(&expr);
 }
 
+// Public methods
+
 const ParentExpr& Expr::get_obj() const{
 	return *obj;
 }
@@ -33,11 +37,7 @@ const ParentExpr& Expr::get_obj() const{
 std::vector<Var> Expr::get_variables() const{
 	return obj->get_variables();
 }
-/*
-const Expr Expr::extend(){
-	return Expr{obj->extend()};
-}
-*/
+
 const Expr Expr::unroll(){
 	return Expr{obj->unroll()};
 }

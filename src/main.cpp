@@ -12,6 +12,7 @@ int main(int argc, char* argv[]){
 	
 	Expr ex = 2*(x + y)*(z*z) + 48;
 	Expr ex2 = 40 + (x*2*z + y*z*2)*z + 8;
-	std::cout << equivalent(ex,ex2) << std::endl;
+	if(equivalent(ex,ex2))
+		std::cout << ex << " = " << ex2 << std::endl;
 
 }
