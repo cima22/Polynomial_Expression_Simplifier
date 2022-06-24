@@ -1,9 +1,7 @@
 #include "expr_child.h"
-#include "expr_parent.h"
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
+
+// Definition of VarExpr class ---------------------------------------------------------------------------------
+// (few methods of class VarExpr are defined afterward, in order to group the definitions of different derived classes togheter)
 
 VarExpr::VarExpr(const Var& v):
 	ParentExpr(v.get_name(),{v}){}
@@ -12,15 +10,11 @@ void VarExpr::set_value(int v){
 	vars[0].set_value(v);
 }
 
-int VarExpr::evaluate(){
-	return vars[0].get_value();
-}
-
-const VarExpr& VarExpr::stretch() const {
+const VarExpr& VarExpr::stretch() const { // There is no need to stretch, it is sufficient to return a copy of the object
 	return * new VarExpr{*this};
 }
 
-const VarExpr& VarExpr::extend() const {
+const VarExpr& VarExpr::extend() const { // There is no need to extend
 	return *this; 
 }
 
@@ -28,24 +22,29 @@ const VarExpr& VarExpr::clone() const{
 	return * new VarExpr{*this};
 }
 
-bool VarExpr::is_only_mult() const{
+bool VarExpr::is_only_mult() const{ // A single variable is always a monomial
 	return true;
 }
 
-int VarExpr::get_degree(const Var& v) const{
-	//return v.get_name().compare(vars[0].get_name()) == 0 ? 1 : 0;
+int VarExpr::get_degree(const Var& v) const{ // returns 1 only if the variable is the same
 	return v == vars[0] ? 1 : 0;
 }
 
-VarExpr::~VarExpr() = default;
+VarExpr::~VarExpr() = default; // default destructor is ok
 
-bool VarExpr::is_extended() const {
+bool VarExpr::is_extended() const { // a variable is always a monomial
 	return true;
 }
 
-std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) const {
+const ParentExpr& VarExpr::extract_monomial(const Var& v) const { // extract the monomial that multiplies the variable (in this case either the variable itslef or 1)
+	if(vars[0] == v)
+		return * new ConstExpr{1};
+	return this->clone();
+}
+
+std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) const { // return the coefficients of a variable is trivial
 	std::map<unsigned int,const ParentExpr*> coeffs{};
-	bool is_same_var = v == vars[0];// vars[0].get_name().compare(v.get_name()) == 0;
+	bool is_same_var = v == vars[0];
 	if(is_same_var){
 		ConstExpr* g_1 = new ConstExpr{1};
 		coeffs.insert({1,g_1});
@@ -53,17 +52,19 @@ std::map<unsigned int, const ParentExpr*> VarExpr::get_coeffs(const Var& v) cons
 	return coeffs;
 }
 
-void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
-	bool is_same_var = vars[0] == v;//to_string().compare(v.get_name()) == 0;
+void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{ // inserts into an existing map the coefficient relative to variable v. If a coefficient with the same degree
+												   // is present, then it sums the coefficients. 
+	bool is_same_var = vars[0] == v;
 	int degree       = is_same_var ? 1 : 0;
-	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(degree);
-	const ParentExpr* new_sub;
+	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(degree); // check if a coefficient with the same degree is already present
+	const ParentExpr* new_sub = &extract_monomial(v);
+	/*
 	if(is_same_var)
-		new_sub = new ConstExpr{1};
+		new_sub = new ConstExpr{1}; // the coefficient of the same variable is 1
 	else{
-		new_sub = &clone();
-	}
-	if(present != coeffs.end()){
+		new_sub = &clone(); 	    // the coefficient of a different variable is the variable itself
+	}*/
+	if(present != coeffs.end()){ // if the another coefficient with that degree is already present, sum the two to obtain the new coefficient
 		const ParentExpr* new_coeff = new CompExpr{*coeffs[degree],*new_sub,operation::sum};
 		present->second = new_coeff;
 	}
@@ -72,28 +73,22 @@ void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, co
 	}
 }
 
-const ParentExpr& VarExpr::extract_monomial(const Var& v) const {
-	//if(to_string().compare(v.get_name()) == 0)
-	if(vars[0] == v)
-		return * new ConstExpr{1};
-	return this->clone();
-}
 
-const ParentExpr& VarExpr::replace(const std::map<Var,const ParentExpr*>& repl) const {
+const ParentExpr& VarExpr::replace(const std::map<Var,const ParentExpr*>& repl) const { // replace the variable with another expression
 	bool present = repl.find(vars[0]) != repl.end();
-	if(!present)
-		return this->clone();
-	return repl.at(vars[0])->clone();
+	if(!present) // if the variables has not to be replaced, return a copy of it
+		return this->clone(); 
+	return repl.at(vars[0])->clone(); // return a copy of the expression wich should replace the variable
 }
 
-bool VarExpr::is_VarExpr(const ParentExpr& ex){ return dynamic_cast<const VarExpr*>(&ex); }
+bool VarExpr::is_VarExpr(const ParentExpr& ex){ return dynamic_cast<const VarExpr*>(&ex); } // tries to cast the parent reference to a VarExpr reference
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+// Definition of VarExpr class ------------------------------------------------------------------------------------------------------------------------------
+// (few methods of class VarExpr are defined afterward, in order to group the definitions of different derived classes together)
 
 ConstExpr::ConstExpr(const int i):
 	value{i},ParentExpr(std::to_string(i)){}
-
-int ConstExpr::evaluate(){
-	return value;
-}
 
 const ConstExpr& ConstExpr::stretch() const {
 	return * new ConstExpr{*this};
@@ -121,12 +116,11 @@ const ConstExpr& ConstExpr::clone() const{
 
 ConstExpr::~ConstExpr() = default;
 
-
-std::map<unsigned int, const ParentExpr*> ConstExpr::get_coeffs(const Var& v) const {
+std::map<unsigned int, const ParentExpr*> ConstExpr::get_coeffs(const Var& v) const { // the map that has to be returned is empty, there are no coefficient for any variable
 	return std::map<unsigned int, const ParentExpr*>{};
 }
 
-void ConstExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{
+void ConstExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var& v) const{ // insert the constant in an existing map with degree 0. Sums to an existing coefficient, if any
 	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(0);
 	const ParentExpr* new_coeff;
 	if(present != coeffs.end()){
@@ -149,7 +143,10 @@ const ParentExpr& ConstExpr::replace(const std::map<Var,const ParentExpr*>& repl
 
 bool ConstExpr::is_ConstExpr(const ParentExpr& ex){ return dynamic_cast<const ConstExpr*>(&ex); }
 
-std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, const operation op){
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+// Definition of CompExpr class ------------------------------------------------------------------------------------------------------------------------------
+
+std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, const operation op){ // given two sub-expr and an operation, constructs the string format of the expression
 	char op_c;
 	switch(op){
 		case operation::sum:
@@ -174,19 +171,20 @@ CompExpr::CompExpr(const ParentExpr& e1, const ParentExpr& e2, const operation o
 	sub_1{e1}, sub_2{e2}, op{op}, ParentExpr(create_string(e1,e2,op))
 	{}
 
-CompExpr::CompExpr(const std::string& expr, const ParentExpr& e1, const ParentExpr& e2, operation op):
+CompExpr::CompExpr(const std::string& expr, const ParentExpr& e1, const ParentExpr& e2, operation op): // constructor with a custom string format
 	sub_1{e1},sub_2{e2},op{op},ParentExpr(expr)
 	{}
 
-CompExpr::CompExpr(const std::string& expr, const std::vector<Var>& vars, const ParentExpr& e1, const ParentExpr& e2, operation op):
+CompExpr::CompExpr(const std::string& expr, const std::vector<Var>& vars, const ParentExpr& e1, const ParentExpr& e2, operation op): // constructor with custom string format and vector of variables
 	sub_1{e1},sub_2{e2},op{op},ParentExpr(expr,vars)
 	{}
 
-CompExpr::CompExpr(const CompExpr& comp):
+CompExpr::CompExpr(const CompExpr& comp): // copy constructor where also the sub expressions are copied
 	sub_1{comp.get_sub_1().clone()},sub_2{comp.get_sub_2().clone()},op{comp.get_op()},ParentExpr(comp){}
 
+// Static methods
 
-const ParentExpr& CompExpr::create_monomial(const Var& v, unsigned int degree) {
+const ParentExpr& CompExpr::create_monomial(const Var& v, unsigned int degree) { // recursively creates v**degree
 	if(degree == 0)
 		return * new ConstExpr{1};
 	const VarExpr& var = * new VarExpr{v};
@@ -195,67 +193,69 @@ const ParentExpr& CompExpr::create_monomial(const Var& v, unsigned int degree) {
 	return * new CompExpr{var,create_monomial(v,degree - 1),operation::mul};
 };
 
-const operation CompExpr::get_op() const { return op; }
+// End of static methods
 
+const operation CompExpr::get_op()      const { return op; }
 const ParentExpr& CompExpr::get_sub_1() const { return sub_1; }
 const ParentExpr& CompExpr::get_sub_2() const { return sub_2; }
 
-const CompExpr& CompExpr::clone() const{
+const CompExpr& CompExpr::clone() const{ // creates a clone of the comp expression, cloning also the sub expressions
 	const ParentExpr& clone_sub_1 = sub_1.clone();
 	const ParentExpr& clone_sub_2 = sub_2.clone();
 	return * new CompExpr{clone_sub_1,clone_sub_2,op};
 }
 
-std::map<unsigned int, const ParentExpr*> CompExpr::get_coeffs(const Var& v) const {
+std::map<unsigned int, const ParentExpr*> CompExpr::get_coeffs(const Var& v) const { // returns the non-null coefficients in respect to the variable x
 	std::map<unsigned int,const ParentExpr*> coeffs{};
-	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
+	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend()); // perform the extension of the expression so to have it in a form of sum of monomials
 	switch(extended.get_op()){
-		case operation::mul:
+		case operation::mul: // if the extended expression is a multiplication, than it is a monomial, so we can insert the corresponding coefficient in the map
 			extended.insert_coeff(coeffs,v);
 			break;
-		case operation::sum:{
+		case operation::sum:{ // if the extended expression is a sum, than there could be two cases: either one sub expression is a monomial and the other is a sum of monomials or it is just
+				      // a sum of two monomials.
 			const ParentExpr& ext_sub_1 = extended.get_sub_1();
 			const ParentExpr& ext_sub_2 = extended.get_sub_2();
-			bool is_only_mult_1 = ext_sub_1.is_only_mult();
-			bool is_only_mult_2 = ext_sub_2.is_only_mult();
+			bool is_only_mult_1 = ext_sub_1.is_only_mult(); // check if first sub expr is a monomial
+			bool is_only_mult_2 = ext_sub_2.is_only_mult(); // check if second sub expr is a monomial
 
-			if(is_only_mult_1 != is_only_mult_2){
-				const ParentExpr& ext_sub = is_only_mult_1 ? ext_sub_2 : ext_sub_1; 
-				coeffs = ext_sub.get_coeffs(v);
+			if(is_only_mult_1 != is_only_mult_2){ // if one of the sub expr is a sum of monomials
+				const ParentExpr& ext_sub = is_only_mult_1 ? ext_sub_2 : ext_sub_1;
+				coeffs = ext_sub.get_coeffs(v); // get the map of the coefficient of the rest of the sum of monomials
 			}
 	
-			if(is_only_mult_1)
+			if(is_only_mult_1) // if sub expr 1 is a monomial, insert it into the map
 				ext_sub_1.insert_coeff(coeffs,v);
-			if(is_only_mult_2)
+			if(is_only_mult_2) // if sub expr 2 is a monomial, insert it into the map
 				ext_sub_2.insert_coeff(coeffs,v);
 			break;
 		}
 		default:
 			break;
 	}
-	delete &extended;
+	delete &extended; // delete the extended expression genereted
 	return coeffs;
 }
 
-void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var &v) const {
-	int degree = get_degree(v);
-	const ParentExpr& new_monomial = extract_monomial(v);
-	std::map<unsigned int,const ParentExpr*>::iterator present = coeffs.find(degree);
+void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var &v) const { // insert the coefficient of the monomial relative to the variable into the map
+	int degree = get_degree(v); // get the degree of the variable in the monomial
+	const ParentExpr& new_monomial = extract_monomial(v); // extract the monomial that multiplies the power of the variable
+	std::map<unsigned int,const ParentExpr*>::iterator present = coeffs.find(degree); // find if a coefficient with that degree is already present in the map
 	const ParentExpr* new_coeff = &new_monomial;
-	if(present != coeffs.end()){
+	if(present != coeffs.end()){ // if it is present, sum the two to obtain the new coefficient
 		new_coeff = new CompExpr{*coeffs[degree],new_monomial,operation::sum};
 		present->second = new_coeff;
 	}
 	coeffs.insert({degree,new_coeff});
 }
 
-int CompExpr::get_degree(const Var& v) const {
+int CompExpr::get_degree(const Var& v) const { // the degree of the monomial in respect to the variable is the sum of the degree of the monomial in the sub expressions
 	return sub_1.get_degree(v) + sub_2.get_degree(v);	
 }
 
-const ParentExpr& CompExpr::extract_monomial(const Var& v) const {
-	bool is_var_1 = dynamic_cast<const VarExpr*>(&sub_1);
-	bool is_var_2 = dynamic_cast<const VarExpr*>(&sub_2);
+const ParentExpr& CompExpr::extract_monomial(const Var& v) const { // extract the monomial part that multiplies the power of the variable in the monomial
+	bool is_var_1 = VarExpr::is_VarExpr(sub_1);//dynamic_cast<const VarExpr*>(&sub_1);
+	bool is_var_2 = VarExpr::is_VarExpr(sub_2);//dynamic_cast<const VarExpr*>(&sub_2);
 	if(is_var_1 || is_var_2){
 		const VarExpr& var = is_var_1 ? dynamic_cast<const VarExpr&>(sub_1) : dynamic_cast<const VarExpr&>(sub_2);
 		const ParentExpr& other_sub = is_var_1 ? sub_2 : sub_1;
@@ -508,10 +508,6 @@ bool CompExpr::is_only_mult() const {
 	return is_sub_1_only_mult && is_sub_2_only_mult;
 }
 
-int CompExpr::evaluate(){
-	return 0;
-}
-
 CompExpr::~CompExpr(){
 	delete &sub_1;
 	delete &sub_2;
@@ -521,27 +517,6 @@ bool are_same_type(const ParentExpr& e1, const ParentExpr& e2){
 	return (VarExpr::is_VarExpr(e1) && VarExpr::is_VarExpr(e2)) || 
 	       (ConstExpr::is_ConstExpr(e1) && ConstExpr::is_ConstExpr(e2)) ||
 	       (CompExpr::is_CompExpr(e1) && CompExpr::is_CompExpr(e2));
-}
-
-bool are_equal(const ParentExpr& e1, const ParentExpr& e2){
-	if(!are_same_type(e1,e2))
-		return false;
-
-}
-
-const ParentExpr& CompExpr::extend_and_group() const {
-	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
-	if(extended.get_op() == operation::mul)
-		return ordered_monomial();
-	return * new CompExpr{extended.get_sub_1().extend_and_group(),extended.get_sub_2().extend_and_group(),operation::sum};
-}
-
-const ParentExpr& VarExpr:: extend_and_group() const {
-	return clone();
-}
-
-const ParentExpr& ConstExpr:: extend_and_group() const {
-	return clone();
 }
 
 const ParentExpr& CompExpr::ordered_monomial() const {
