@@ -256,15 +256,15 @@ int CompExpr::get_degree(const Var& v) const { // the degree of the monomial in 
 const ParentExpr& CompExpr::extract_monomial(const Var& v) const { // extract the monomial part that multiplies the power of the variable in the monomial
 	bool is_var_1 = VarExpr::is_VarExpr(sub_1);//dynamic_cast<const VarExpr*>(&sub_1);
 	bool is_var_2 = VarExpr::is_VarExpr(sub_2);//dynamic_cast<const VarExpr*>(&sub_2);
-	if(is_var_1 || is_var_2){
-		const VarExpr& var = is_var_1 ? dynamic_cast<const VarExpr&>(sub_1) : dynamic_cast<const VarExpr&>(sub_2);
-		const ParentExpr& other_sub = is_var_1 ? sub_2 : sub_1;
-		if(var.get_variables()[0] == v)//if(var.to_string().compare(v.get_name()) == 0)
-			return other_sub.extract_monomial(v);
-		return * new CompExpr{var.clone(),other_sub.extract_monomial(v),operation::mul};
+	if(is_var_1 || is_var_2){ // if at least one of the sub expr is a variable
+		const VarExpr& var = is_var_1 ? dynamic_cast<const VarExpr&>(sub_1) : dynamic_cast<const VarExpr&>(sub_2); // get the variable sub expr
+		const ParentExpr& other_sub = is_var_1 ? sub_2 : sub_1; // get the other sub expr that may be a variable or not
+		if(var.get_variables()[0] == v) // if the variable part is the same variable for which we are searching the monomial
+			return other_sub.extract_monomial(v); // extract just the monomial part in the other sub expression
+		return * new CompExpr{var.clone(),other_sub.extract_monomial(v),operation::mul}; 
 	
 	}
-	return * new CompExpr{sub_1.extract_monomial(v),sub_2.extract_monomial(v),operation::mul};
+	return * new CompExpr{sub_1.extract_monomial(v),sub_2.extract_monomial(v),operation::mul}; // if both sub expr are comp expr, return the multiplication of the two monomial extracted 
 }
 
 const ParentExpr& CompExpr::replace(const std::map<Var,const ParentExpr*>& repl) const {
