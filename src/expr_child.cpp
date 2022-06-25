@@ -15,7 +15,7 @@ const VarExpr& VarExpr::stretch() const { // There is no need to stretch, it is 
 }
 
 const VarExpr& VarExpr::extend() const { // There is no need to extend
-	return *this; 
+	return * new VarExpr{*this}; 
 }
 
 const VarExpr& VarExpr::clone() const{
@@ -58,12 +58,7 @@ void VarExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, co
 	int degree       = is_same_var ? 1 : 0;
 	std::map<unsigned int, const ParentExpr*>::iterator present = coeffs.find(degree); // check if a coefficient with the same degree is already present
 	const ParentExpr* new_sub = &extract_monomial(v);
-	/*
-	if(is_same_var)
-		new_sub = new ConstExpr{1}; // the coefficient of the same variable is 1
-	else{
-		new_sub = &clone(); 	    // the coefficient of a different variable is the variable itself
-	}*/
+
 	if(present != coeffs.end()){ // if the another coefficient with that degree is already present, sum the two to obtain the new coefficient
 		const ParentExpr* new_coeff = new CompExpr{*coeffs[degree],*new_sub,operation::sum};
 		present->second = new_coeff;
@@ -243,6 +238,8 @@ std::map<unsigned int, const ParentExpr*> CompExpr::get_coeffs(const Var& v) con
 }
 
 void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, const Var &v) const { // insert the coefficient of the monomial relative to the variable into the map
+	if(!is_only_mult())
+		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
 	int degree = get_degree(v); // get the degree of the variable in the monomial
 	const ParentExpr& new_monomial = extract_monomial(v); // extract the monomial that multiplies the power of the variable
 	std::map<unsigned int,const ParentExpr*>::iterator present = coeffs.find(degree); // find if a coefficient with that degree is already present in the map
@@ -256,6 +253,8 @@ void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, c
 
 int CompExpr::get_degree(const Var& v) const { // the degree of the monomial in respect to the variable is the sum of the degree of the monomial in the sub expressions
 	return sub_1.get_degree(v) + sub_2.get_degree(v);	
+	if(!is_only_mult())
+		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
 }
 
 const ParentExpr& CompExpr::extract_monomial(const Var& v) const { // extract the monomial part that multiplies the power of the variable in the monomial
@@ -530,10 +529,14 @@ bool CompExpr::is_only_mult() const { // check that the comp expr is a monomial,
 }
 
 const ParentExpr& CompExpr::ordered_monomial() const { // return a monomial which is ordered: first the constant part, then the power of the variables in alphanetic ordered
+	if(!is_only_mult())
+		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
 	return create_monomial(get_monomial());        // e.g.: ordered_monomial(x * z * 2 * y * x * x * 4) = 8 * x * x * x * y * z
 }
 
 std::pair<int,std::map<Var,unsigned int>> CompExpr::get_monomial() const{ // return the monomial in form of a std::pair<int,std::map<Var, unsigned int>>
+	if(!is_only_mult())
+		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
 	std::pair<int,std::map<Var,unsigned int>> monomial{};
 	monomial.first = get_monomial_const();
 	std::map<Var,unsigned int> degrees{};
@@ -604,6 +607,8 @@ std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_m
 }
 
 void ParentExpr::insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned int>>>& vec) const { // insert the monomial in an existing vector of monomials
+	if(!is_only_mult())
+		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
 	std::pair<int,std::map<Var,unsigned int>> monomial = get_monomial();
 	for(auto& e : vec)
 		if(e.second == monomial.second){ // if a monomial with the same degree already exists, sum the constant part of the two
@@ -626,7 +631,11 @@ std::vector<std::pair<int,std::map<Var,unsigned int>>> ConstExpr::get_vector_of_
 	return q;
 }
 
-int CompExpr:: get_monomial_const() const { return sub_1.get_monomial_const() * sub_2.get_monomial_const();} // the costant part of a monomial is the multiplication of the constant part of the sub-monomials
+int CompExpr:: get_monomial_const() const { // the costant part of a monomial is the multiplication of the constant part of the sub-monomias
+	if(!is_only_mult())
+		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
+	return sub_1.get_monomial_const() * sub_2.get_monomial_const();
+} 
 int VarExpr::  get_monomial_const() const { return 1; } // constant part of a VarExpr
 int ConstExpr::get_monomial_const() const { return value;} // constant part of a ConstExpr is the value itself
 

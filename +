@@ -1,5 +1,4 @@
 #include "expr_parent.h"
-#include "expr_exception.h"
 #include <string>
 #include <map>
 #include <memory>
@@ -54,8 +53,6 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 	public:
 		// Constructor & Destructor
 		ConstExpr(const int i);
-		ConstExpr(const ConstExpr& expr) = default;
-		ConstExpr(ConstExpr&& expr)      = default;
 		virtual ~ConstExpr();
 		
 		// Public methods
@@ -63,8 +60,6 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		const ConstExpr& clone() const override;
 		bool is_only_mult()      const override;
 		static bool is_ConstExpr(const ParentExpr& ex); // static method to check if the reference is to an instance of ConstExpr
-		ConstExpr& operator=(const ConstExpr& expr) = default;
-		ConstExpr& operator=(ConstExpr&& expr)      = default;
 		
 		// Methods that can be used only if the expression is a monomial (in this case it is always a monomial)
 		int get_degree(const Var& v) const override;

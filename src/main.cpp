@@ -1,4 +1,5 @@
 #include <iostream>
+#include "expr_parent.h"
 #include "var.h"
 #include "expr.h"
 #include <new>
@@ -11,11 +12,7 @@ int main(int argc, char* argv[]){
 	Var y{"y"};
 	Var z{"z"};
 
-	Expr ex = (x + y) * (z * 2);
-	{
-	Expr ex2 = ex;
-}	
-
-std::cout << ex << std::endl;
+	CompExpr ex = 2 * (x + y) * z;
+	std::cout << ex << " = " << ex.extend() << std::endl;
 
 }

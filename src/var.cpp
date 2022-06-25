@@ -15,7 +15,7 @@ const float        Var::get_value() const {return value;}
 void               Var::set_value(const float new_value){ value = new_value; }
 
 std::ostream& operator<< (std::ostream& os, const Var& v){
-	os << v.name << " = " << v.value;
+	os << v.name;
 	return os;
 }
 

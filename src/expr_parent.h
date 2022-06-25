@@ -26,6 +26,10 @@ class ParentExpr{
 		ParentExpr();
 		ParentExpr(const std::string& expr);
 		ParentExpr(const std::string& expr, const std::vector<Var>& vars);
+
+		ParentExpr(const ParentExpr& expr) = default;
+		ParentExpr(ParentExpr&& expr)      = default;
+
 		virtual ~ParentExpr() = 0;
 
 		// Public methods 
@@ -34,6 +38,8 @@ class ParentExpr{
 		const std::string& 	  to_string() 		   const;
 		virtual const ParentExpr& clone() 		   const = 0; // returns a copy of the expression
 		virtual bool     	  is_only_mult()           const = 0; // checks if the expression is a monomial, i.e. it is composed of only multiplications (or it is a constant or a variable)
+		ParentExpr& operator=(const ParentExpr& expr) = default;
+		ParentExpr& operator=(ParentExpr&& expr)      = default;
 
 		 // Methods that works only if the expression is a monomial
 		virtual int  get_degree(const Var& v) const = 0; // Return the degree of the given variable of the monomial
