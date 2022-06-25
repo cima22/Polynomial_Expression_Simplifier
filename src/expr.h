@@ -18,14 +18,16 @@ class Expr{
 	public:
 		// Constructors
 
-		Expr(const Expr& expr);
 		Expr(const ParentExpr * ptr);
 		Expr(const CompExpr& comp_expr);
 		Expr(const ParentExpr& expr);
 		Expr(Var& v);
 		Expr(int i);
 		Expr();
-		
+
+		Expr(const Expr& expr) 	= default;
+		Expr(Expr&& expr) 	= default;
+
 		// Public Methods
 
 		std::vector<Var> get_variables() const;
@@ -35,9 +37,11 @@ class Expr{
 		const Expr unroll();
 		const ParentExpr& get_obj() const;
 
+		Expr& operator=(const Expr& expr) = default;
+		Expr& operator=(Expr&& expr) 	  = default;
+
 		// Friend operators
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& ex);
 		friend bool equivalent(const Expr& e1, const Expr& e2);
-	};
-
+};

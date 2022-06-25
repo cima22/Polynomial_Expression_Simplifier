@@ -4,8 +4,6 @@
 
 Expr::Expr() = default;
 
-Expr::Expr(const Expr& expr) = default;
-
 Expr::Expr(const ParentExpr * ptr){
 	obj.reset(ptr);
 }

@@ -18,7 +18,10 @@ class Var{
 
 		Var(const std::string& name, const float value);
 		Var(const std::string& name);
-		
+
+		Var(const Var& v) = default; // copy ctor
+		Var(Var&& v)      = default; // move ctor
+
 		// Public Methods
 
 		const std::string& get_name() const;
@@ -26,10 +29,13 @@ class Var{
 		const float        get_value() const;
 		void               set_value(const float new_value);
 		
+		Var& operator=(const Var& v) = default; // copy assigment
+		Var& operator=(Var&& v)      = default; // move assigment
+
 		// Friend operators
 
 		friend std::ostream& operator<< (std::ostream& os, const Var& v);
-		friend bool operator< (const Var& v1, const Var& v2);
+		friend bool operator<  (const Var& v1, const Var& v2);
 		friend bool operator== (const Var& v1, const Var& v2);
 };
 

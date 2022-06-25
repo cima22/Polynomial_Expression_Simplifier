@@ -2,4 +2,3 @@
 - Add tests (Boost test library)
 - Check copy and move semantics (should be ok)
 - Add documentation/report
-- Add comments

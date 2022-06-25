@@ -182,6 +182,11 @@ CompExpr::CompExpr(const std::string& expr, const std::vector<Var>& vars, const 
 CompExpr::CompExpr(const CompExpr& comp): // copy constructor where also the sub expressions are copied
 	sub_1{comp.get_sub_1().clone()},sub_2{comp.get_sub_2().clone()},op{comp.get_op()},ParentExpr(comp){}
 
+CompExpr::~CompExpr(){ // destructor of CompExpr. There must be deleted also the sub expressions
+	delete &sub_1;
+	delete &sub_2;
+}
+
 // Static methods
 
 const ParentExpr& CompExpr::create_monomial(const Var& v, unsigned int degree) { // recursively creates v**degree
@@ -267,24 +272,26 @@ const ParentExpr& CompExpr::extract_monomial(const Var& v) const { // extract th
 	return * new CompExpr{sub_1.extract_monomial(v),sub_2.extract_monomial(v),operation::mul}; // if both sub expr are comp expr, return the multiplication of the two monomial extracted 
 }
 
-const ParentExpr& CompExpr::replace(const std::map<Var,const ParentExpr*>& repl) const {
-	const ParentExpr& new_sub_1 = sub_1.replace(repl);
+const ParentExpr& CompExpr::replace(const std::map<Var,const ParentExpr*>& repl) const { // replaces every occurence of a variable by the specified expression
+	const ParentExpr& new_sub_1 = sub_1.replace(repl); // it is simply needed to replace the variables in the sub-expressions
 	const ParentExpr& new_sub_2 = sub_2.replace(repl);
-	bool is_comp_expr_1 = is_CompExpr(new_sub_1);
+	bool is_comp_expr_1 = is_CompExpr(new_sub_1); // check if the sub expressions are comp expr, just to eventually put brackets in the string format
 	bool is_comp_expr_2 = is_CompExpr(new_sub_2);
 	std::string str_1 = is_comp_expr_1 ? "(" + new_sub_1.to_string() + ") " : new_sub_1.to_string() + " ";
 	std::string str_2 = is_comp_expr_2 ? " (" + new_sub_2.to_string() + ")" : " " + new_sub_2.to_string();
 	char op_c = get_op() == operation::sum ? '+' : '*';
 	std::string str = str_1 + op_c + str_2; 
-	return * new CompExpr{str,new_sub_1,new_sub_2,get_op()};
+	return * new CompExpr{str,new_sub_1,new_sub_2,get_op()}; // return the same operation but with replaced sub expressions
 }
 
-const CompExpr& CompExpr::compute_operation(){
+// Methods to compute the operation in the compound expression
+
+const CompExpr& CompExpr::compute_operation(){ // computes the operation indicated by op, returning an equivalent expression
 	
 	bool is_comp_expr_1 = is_CompExpr(sub_1);	// wether the first sub-expression is simple or compound
 	bool is_comp_expr_2 = is_CompExpr(sub_2);	// idem for the second sub-expr
 	
-	if(!is_comp_expr_1 && !is_comp_expr_2)// return a copy of the expression if the sub-expressions are simple	
+	if(!is_comp_expr_1 && !is_comp_expr_2) // return a copy of the expression if the sub-expressions are simple	
 		return * new CompExpr{*this};
 	
 	if(is_comp_expr_1 != is_comp_expr_2){		// if one sub-expr is simple and the other is compound
@@ -310,14 +317,14 @@ const CompExpr& CompExpr::compute_operation(){
 	
 }
 
-const CompExpr& CompExpr::sum_simple_comp(){
+const CompExpr& CompExpr::sum_simple_comp(){ // sum between simple expr and comp expr
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	const CompExpr& sub_comp = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 	const ParentExpr& sub    = is_comp_expr_1 ? sub_2 : sub_1;
-	return * new CompExpr{sub.clone(),sub_comp.clone(),operation::sum};
+	return * new CompExpr{sub.clone(),sub_comp.clone(),operation::sum}; // rearrange the expression to have the simple expression as first sub expr
 }
 
-const CompExpr& CompExpr::compound_sum(){
+const CompExpr& CompExpr::compound_sum(){ // sum between to comp expr
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	operation op_sub_1   = comp_sub_1.get_op();
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
@@ -330,27 +337,27 @@ const CompExpr& CompExpr::compound_sum(){
 	return this->sum_mixed();
 }
 
-const CompExpr& CompExpr::sum_sum(){
+const CompExpr& CompExpr::sum_sum(){ // sum of two sum-comp expr. Returns an equivalent expression using the associative law
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
-
 	const CompExpr& sum_2 = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.clone(),operation::sum};
-
 	const CompExpr& sum_1 = * new CompExpr{comp_sub_1.get_sub_1().clone(),sum_2,operation::sum};
 
 	return sum_1;
 }
 
-const CompExpr& CompExpr::sum_mult(){
+const CompExpr& CompExpr::sum_mult(){ // in this case it is sufficient to return a copy of the expression
+	return this->clone();
+	/*
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
-	return * new CompExpr{comp_sub_1.clone(),comp_sub_2.clone(),operation::sum};
+	return * new CompExpr{comp_sub_1.clone(),comp_sub_2.clone(),operation::sum};*/
 }
 
-const CompExpr& CompExpr::sum_mixed(){
+const CompExpr& CompExpr::sum_mixed(){ // sum of one sum-comp expr and one mult-comp expr. Returns an equivalent expression using the associative law
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
-	bool is_first_sum = comp_sub_1.get_op() == operation::sum;
+	bool is_first_sum = comp_sub_1.get_op() == operation::sum; // is the first sub expr a sum or the second?
 
 	const ParentExpr& new_sub_1_1 = is_first_sum ? comp_sub_1.get_sub_1() : comp_sub_2.get_sub_1();
 	const ParentExpr& new_sub_1_2 = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
@@ -361,17 +368,15 @@ const CompExpr& CompExpr::sum_mixed(){
 	return * new CompExpr{new_sub_1_1.clone(),sum_2,operation::sum};
 }
 
-const CompExpr& CompExpr::mult_simple_comp(){
+const CompExpr& CompExpr::mult_simple_comp(){ // multiplication of a simple expr and a comp expr
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	const CompExpr& sub_comp = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
-	const ParentExpr& sub_simple   = is_comp_expr_1 ? sub_2 : sub_1;
-	operation sub_op   = sub_comp.get_op();
-	switch(sub_op){
+	const ParentExpr& sub_simple = is_comp_expr_1 ? sub_2 : sub_1;
+	operation sub_op = sub_comp.get_op();
+	switch(sub_op){ // different behavoiur accordingly to the operation of the sub comp expr
 		case operation::sum:
-			return this->distr_law();
-		case operation::mul:{
-			std::string mem2 = sub_comp.to_string();
-			//std::string mul = sub_simple.to_string() + " * " + sub_comp.to_string();
+			return this->distr_law(); // distributive law
+		case operation::mul:{ // put the simple expr as first sub expr
 			return * new CompExpr{sub_simple.clone(),sub_comp.clone(),op};
 		    }
 		default:
@@ -379,7 +384,7 @@ const CompExpr& CompExpr::mult_simple_comp(){
 	}
 }
 
-const CompExpr& CompExpr::distr_law(){
+const CompExpr& CompExpr::distr_law(){ // the distributive law
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	const CompExpr& comp_sub = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 	const ParentExpr& simple_sub = is_comp_expr_1 ? sub_2 : sub_1;
@@ -390,7 +395,7 @@ const CompExpr& CompExpr::distr_law(){
 	return * new CompExpr{new_sub_1,new_sub_2,operation::sum};
 }
 
-const CompExpr& CompExpr::compound_mult(){
+const CompExpr& CompExpr::compound_mult(){ // multiplication between two comp expr
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	operation op_sub_1   = comp_sub_1.get_op();
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
@@ -403,59 +408,58 @@ const CompExpr& CompExpr::compound_mult(){
 	return this->mult_mixed();
 }
 
-const CompExpr& CompExpr::mult_sum(){
+const CompExpr& CompExpr::mult_sum(){ // multiplication between two sums; must distribute the sums: (a + b) * (c + d)
 
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
-	const CompExpr&   mul_1_1   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_1().clone(),operation::mul};
-	const CompExpr&   mul_1_2   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_2().clone(),operation::mul};
+	const CompExpr&   mul_1_1   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_1().clone(),operation::mul}; // a * c
+	const CompExpr&   mul_1_2   = * new CompExpr{comp_sub_1.get_sub_1().clone(),comp_sub_2.get_sub_2().clone(),operation::mul}; // a * d
 		
-	const CompExpr&   mul_2_1   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_1().clone(),operation::mul};
-	const CompExpr&   mul_2_2   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_2().clone(),operation::mul};
+	const CompExpr&   mul_2_1   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_1().clone(),operation::mul}; // b * c
+	const CompExpr&   mul_2_2   = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.get_sub_2().clone(),operation::mul}; // b * d
 		
-	const CompExpr&     sum_3   = * new CompExpr{mul_2_1,mul_2_2,operation::sum};
-	const CompExpr&     sum_2   = * new CompExpr{mul_1_2,sum_3,operation::sum};
-	const CompExpr&     sum_1   = * new CompExpr{mul_1_1,sum_2,operation::sum};
+	const CompExpr&     sum_3   = * new CompExpr{mul_2_1,mul_2_2,operation::sum}; // (b * c) + (b * d)
+	const CompExpr&     sum_2   = * new CompExpr{mul_1_2,sum_3,operation::sum};   // (a * d) + ((b * c) + (b * d))
+	const CompExpr&     sum_1   = * new CompExpr{mul_1_1,sum_2,operation::sum};   // (a * c) + ((a * d) * ((b * c) + (b * d)))
 
 	return sum_1;
 }
 
-const CompExpr& CompExpr::mult_mult(){
+const CompExpr& CompExpr::mult_mult(){ // multiplication between two mult comp expr; use associative law
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 
 	const CompExpr& mul_2 = * new CompExpr{comp_sub_1.get_sub_2().clone(),comp_sub_2.clone(),operation::mul};
-
 	const CompExpr& mul_1 = * new CompExpr{comp_sub_1.get_sub_1().clone(),mul_2,operation::mul};
 
 	return mul_1;
 }
 
-const CompExpr& CompExpr::mult_mixed(){
+const CompExpr& CompExpr::mult_mixed(){ // multiplication between one sum-comp expr and one mult-comp expr; must distribute the sum: (a + b) * (c * d)
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 	bool is_first_sum    = comp_sub_1.get_op() == operation::sum;
-
 	const ParentExpr& new_sub_1_1    = is_first_sum ? comp_sub_1.get_sub_1() : comp_sub_2.get_sub_1();
 	const ParentExpr& new_sub_1_2    = is_first_sum ? comp_sub_1.get_sub_2() : comp_sub_2.get_sub_2();
 	const CompExpr& new_mem_2  = is_first_sum ? comp_sub_2 : comp_sub_1;
 
-	const ParentExpr& new_sub_1      = * new CompExpr{new_sub_1_1.clone(),new_mem_2.clone(),operation::mul};
+	const ParentExpr& new_sub_1      = * new CompExpr{new_sub_1_1.clone(),new_mem_2.clone(),operation::mul}; // a * (c * d)
+	const ParentExpr& new_sub_2      = * new CompExpr{new_sub_1_2.clone(),new_mem_2.clone(),operation::mul}; // b * (c * d)
 
-	const ParentExpr& new_sub_2      = * new CompExpr{new_sub_1_2.clone(),new_mem_2.clone(),operation::mul};
-
-	return * new CompExpr{new_sub_1,new_sub_2,operation::sum};
+	return * new CompExpr{new_sub_1,new_sub_2,operation::sum}; // (a * (c * d)) + (b * (c * d))
 }
+// ----------------------------------------------------------------------------------------------------------------------------------------
+// Methods to obtain the expression in the form of sum of monomials
 
-const CompExpr& CompExpr::stretch() const {
+const CompExpr& CompExpr::stretch() const { // recursively calls stretch() to its sub expressions to distribute the sums. Then, it computes the operation to eventually distribute the result
 	const ParentExpr& new_sub_1 = sub_1.stretch();
 	const ParentExpr& new_sub_2 = sub_2.stretch();
 	CompExpr new_comp{new_sub_1,new_sub_2,op};
 	const CompExpr& c = new_comp.compute_operation();
 	return c;
 }
-const CompExpr& CompExpr::extend() const {
+const CompExpr& CompExpr::extend() const { // calls stretch until the expression is in form of sum of monomials
 	if(is_extended())
 		return this->clone();
 	const CompExpr& str = stretch();
@@ -464,30 +468,47 @@ const CompExpr& CompExpr::extend() const {
 	return tmp.extend();
 }
 
-bool CompExpr::is_extended() const {
+const ParentExpr& CompExpr::unroll() const{ // from the vector of monomials that composes the expression, return an equivalent expression which is the sum of the monomials of vector
+	std::vector<std::pair<int,std::map<Var,unsigned int>>> q = get_vector_of_monomials();
+	const ParentExpr* polynomial = &create_monomial(q[0]); // the vector is for sure not empty (at least there is a constant)
+	for(int i = 1; i < q.size(); i++)
+		polynomial = new CompExpr{create_monomial(q[i]),*polynomial,operation::sum}; // sum the polynomial created so far with the i-th monomial
+	return *polynomial;
+}
+
+const ParentExpr& ConstExpr::unroll() const { // it is trivial for a VarExpr
+	return clone();
+}
+
+const ParentExpr& VarExpr::unroll() const { // it is trivial for a ConstExpr
+	return clone();
+}
+
+
+bool CompExpr::is_extended() const { //check if the expression is in the form of sum of monomials
 	bool is_comp_expr_1 = is_CompExpr(sub_1);
 	bool is_comp_expr_2 = is_CompExpr(sub_2);
 
-	if(!is_comp_expr_1 && !is_comp_expr_2)
+	if(!is_comp_expr_1 && !is_comp_expr_2) // if it is an operation between to simple expressions, then it is true
 		return true;
-	if(is_comp_expr_1 != is_comp_expr_2){
+	if(is_comp_expr_1 != is_comp_expr_2){ // if one is simple and another compound
 		const CompExpr& comp_sub = is_comp_expr_1 ? dynamic_cast<const CompExpr&>(sub_1) : dynamic_cast<const CompExpr&>(sub_2);
 		switch(op){
 			case operation::sum:
-				return comp_sub.is_extended();
+				return comp_sub.is_extended(); // if the operation is a sum, then it is needed to check if the sub comp expression is a sum of monomials
 			case operation::mul:
-				return comp_sub.is_only_mult();
+				return comp_sub.is_only_mult(); // if the operation is a multiplication, then it is needed to check if the sub comp expr is a monomial (only multiplications)
 			default:
 				return false;
 		}
 	}
-
+	// At this point it is sure that the two sub expr are comp expr
 	const CompExpr& comp_sub_1 = dynamic_cast<const CompExpr&>(sub_1);
 	const CompExpr& comp_sub_2 = dynamic_cast<const CompExpr&>(sub_2);
 	switch(op){
-		case operation::sum:
+		case operation::sum: // if both are comp expr and the operation a sum, then it is needed to check that one comp expr is a monomial and the other a sum of monmials
 			return (comp_sub_1.is_only_mult() && comp_sub_2.is_extended()) || (comp_sub_1.is_extended() && comp_sub_2.is_only_mult());
-		case operation::mul:
+		case operation::mul: // if both are comp expr and the operation a multiplication, then it is needed to check that both are monomials
 			return comp_sub_1.is_only_mult() && comp_sub_2.is_only_mult();
 		default:
 			return false;
@@ -495,81 +516,71 @@ bool CompExpr::is_extended() const {
 	
 }
 
-bool CompExpr::is_only_mult() const {
+bool CompExpr::is_only_mult() const { // check that the comp expr is a monomial, i.e. all the sub operations are multiplications
 	if(op == operation::sum)
 		return false;
 	bool is_sub_1_only_mult = true;
 	bool is_sub_2_only_mult = true;
 	if(is_CompExpr(sub_1))
-		is_sub_1_only_mult = dynamic_cast<const CompExpr&>(sub_1).is_only_mult();
+		is_sub_1_only_mult = dynamic_cast<const CompExpr&>(sub_1).is_only_mult(); // check if the sub expr 1 is only made by multiplications
 	if(is_CompExpr(sub_2))
-		is_sub_2_only_mult = dynamic_cast<const CompExpr&>(sub_2).is_only_mult();
+		is_sub_2_only_mult = dynamic_cast<const CompExpr&>(sub_2).is_only_mult(); // check if the sub expr 2 is only made by multiplications
 	
 	return is_sub_1_only_mult && is_sub_2_only_mult;
 }
 
-CompExpr::~CompExpr(){
-	delete &sub_1;
-	delete &sub_2;
+const ParentExpr& CompExpr::ordered_monomial() const { // return a monomial which is ordered: first the constant part, then the power of the variables in alphanetic ordered
+	return create_monomial(get_monomial());        // e.g.: ordered_monomial(x * z * 2 * y * x * x * 4) = 8 * x * x * x * y * z
 }
 
-bool are_same_type(const ParentExpr& e1, const ParentExpr& e2){
-	return (VarExpr::is_VarExpr(e1) && VarExpr::is_VarExpr(e2)) || 
-	       (ConstExpr::is_ConstExpr(e1) && ConstExpr::is_ConstExpr(e2)) ||
-	       (CompExpr::is_CompExpr(e1) && CompExpr::is_CompExpr(e2));
-}
-
-const ParentExpr& CompExpr::ordered_monomial() const {
-	return create_monomial(get_monomial());
-}
-
-std::pair<int,std::map<Var,unsigned int>> CompExpr::get_monomial() const{
+std::pair<int,std::map<Var,unsigned int>> CompExpr::get_monomial() const{ // return the monomial in form of a std::pair<int,std::map<Var, unsigned int>>
 	std::pair<int,std::map<Var,unsigned int>> monomial{};
 	monomial.first = get_monomial_const();
 	std::map<Var,unsigned int> degrees{};
-	for(auto& v : vars)
-		degrees.insert({v,get_degree(v)});
+	for(auto& v : vars) // extract the degree of every variable
+		degrees.insert({v,get_degree(v)}); // insert into the map
 	monomial.second = degrees;
 	return monomial;
 }
 
-std::pair<int,std::map<Var,unsigned int>> VarExpr::get_monomial() const{
+std::pair<int,std::map<Var,unsigned int>> VarExpr::get_monomial() const{ // return the variable in form of a std::pair
 	std::map<Var,unsigned int> degree = {{vars[0],1}};
 	std::pair<int,std::map<Var,unsigned int>> monomial{1,degree};
 	return monomial;
 }
 
-std::pair<int,std::map<Var,unsigned int>> ConstExpr::get_monomial() const{
+std::pair<int,std::map<Var,unsigned int>> ConstExpr::get_monomial() const{ // return the constant in form of a std::pair
 	std::map<Var,unsigned int> degree{};
 	std::pair<int,std::map<Var,unsigned int>> monomial{value,degree};
 	return monomial;
 }
 
-const ParentExpr& CompExpr::create_monomial(std::pair<int,std::map<Var,unsigned int>> monomial) {
+const ParentExpr& CompExpr::create_monomial(std::pair<int,std::map<Var,unsigned int>> monomial) { // creates an expression starting from a monomial in form of std::pair
 	std::queue<const ParentExpr*> tmp_monomials{};
-	for(auto& e : monomial.second)
-		tmp_monomials.push(&create_monomial(e.first, e.second));
-	const ParentExpr* tmp_monomial = new ConstExpr{monomial.first};
-	if(monomial.first == 1 && !tmp_monomials.empty()){
+	for(auto& e : monomial.second) // for every variable with its degree
+		tmp_monomials.push(&create_monomial(e.first, e.second)); // create a monomial with that variable and that degree and put it in a queue
+	const ParentExpr* tmp_monomial = new ConstExpr{monomial.first};  // create the ConstExpr that will store the constant part
+	if(monomial.first == 1 && !tmp_monomials.empty()){ // if the constant part is one and there are variables, omit the 1 in order not to have expressions like 1 * x * x * y
 		delete tmp_monomial;
 		tmp_monomial = tmp_monomials.front();
 		tmp_monomials.pop();
 	}
-	while(!tmp_monomials.empty()){
-		tmp_monomial = new CompExpr{*tmp_monomial,*tmp_monomials.front(),operation::mul};
-		tmp_monomials.pop();
+	while(!tmp_monomials.empty()){ // while there are monomial to mulitply in the queue
+		tmp_monomial = new CompExpr{*tmp_monomial,*tmp_monomials.front(),operation::mul}; // multiply what we have so far with the new monomial
+		tmp_monomials.pop(); // delete from queue
 	}
 	return *tmp_monomial;
 }
 
-std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_monomials() const {
+std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_monomials() const { // return the vector of monomials that composes an expression
 	std::vector<std::pair<int,std::map<Var,unsigned int>>> vec{};
-	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend());
+	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend()); // extend the expression so to have it in the form of sum of monomials
 	switch(extended.get_op()){
 		case operation::mul:
-			vec.push_back(extended.get_monomial());
+			vec.push_back(extended.get_monomial()); // if the operation is a multiplication then the extended expression is a monomial and it is sufficient to put it in the vector
 			break;
-		case operation::sum:{
+		case operation::sum:{ // if the operation is a sum, one sub expr is a monomial and the other a sum of monomials;
+				      // it is thus needed to get the monomials of the rest of the expression and then add the other monomial
 			const ParentExpr& ext_sub_1 = extended.get_sub_1();
 			const ParentExpr& ext_sub_2 = extended.get_sub_2();
 			bool is_only_mult_1 = ext_sub_1.is_only_mult();
@@ -577,10 +588,10 @@ std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_m
 
 			if(is_only_mult_1 != is_only_mult_2){
 				const ParentExpr& ext_sub = is_only_mult_1 ? ext_sub_2 : ext_sub_1; 
-				vec = ext_sub.get_vector_of_monomials();
+				vec = ext_sub.get_vector_of_monomials(); // get the monomials of the sub-sum
 			}
 			if(is_only_mult_1)
-				ext_sub_1.insert_monomial(vec);
+				ext_sub_1.insert_monomial(vec); // insert the monomial in the newly created vector
 			if(is_only_mult_2)
 				ext_sub_2.insert_monomial(vec);
 			break;
@@ -588,52 +599,36 @@ std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_m
 		default:
 			break;
 	}
-	delete &extended;
+	delete &extended; // the extended expression is no longer needed
 	return vec;
 }
 
-void ParentExpr::insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned int>>>& vec) const {
+void ParentExpr::insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned int>>>& vec) const { // insert the monomial in an existing vector of monomials
 	std::pair<int,std::map<Var,unsigned int>> monomial = get_monomial();
 	for(auto& e : vec)
-		if(e.second == monomial.second){
+		if(e.second == monomial.second){ // if a monomial with the same degree already exists, sum the constant part of the two
 			e.first += monomial.first;
 			return;
 		}
-	vec.push_back(monomial);
+	vec.push_back(monomial); // if it is not present just insert the monomial
 
 }
 
-std::vector<std::pair<int,std::map<Var,unsigned int>>> VarExpr::get_vector_of_monomials() const {
+std::vector<std::pair<int,std::map<Var,unsigned int>>> VarExpr::get_vector_of_monomials() const {// trivial if the expression is a VarExpr
 	std::vector<std::pair<int,std::map<Var,unsigned int>>> q;
 	q.push_back(get_monomial());
 	return q;
 }
 
-std::vector<std::pair<int,std::map<Var,unsigned int>>> ConstExpr::get_vector_of_monomials() const {
+std::vector<std::pair<int,std::map<Var,unsigned int>>> ConstExpr::get_vector_of_monomials() const {// trivial if the expression is a ConstExpr
 	std::vector<std::pair<int,std::map<Var,unsigned int>>> q;
 	q.push_back(get_monomial());
 	return q;
 }
 
-int CompExpr:: get_monomial_const() const { return sub_1.get_monomial_const() * sub_2.get_monomial_const();}
-int VarExpr::  get_monomial_const() const { return 1; }
-int ConstExpr::get_monomial_const() const { return value;}
-
-const ParentExpr& CompExpr::unroll() const{
-	std::vector<std::pair<int,std::map<Var,unsigned int>>> q = get_vector_of_monomials();
-	const ParentExpr* polynomial = &create_monomial(q[0]);
-	for(int i = 1; i < q.size(); i++)
-		polynomial = new CompExpr{create_monomial(q[i]),*polynomial,operation::sum};
-	return *polynomial;
-}
-
-const ParentExpr& ConstExpr::unroll() const {
-	return clone();
-}
-
-const ParentExpr& VarExpr::unroll() const {
-	return clone();
-}
+int CompExpr:: get_monomial_const() const { return sub_1.get_monomial_const() * sub_2.get_monomial_const();} // the costant part of a monomial is the multiplication of the constant part of the sub-monomials
+int VarExpr::  get_monomial_const() const { return 1; } // constant part of a VarExpr
+int ConstExpr::get_monomial_const() const { return value;} // constant part of a ConstExpr is the value itself
 
 // operators ---------------------------------------------------------------------------
 
