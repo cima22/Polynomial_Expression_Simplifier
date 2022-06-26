@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
 	Var y{"y"};
 	Var z{"z"};
 
-	CompExpr ex = 2 * (x + y) * z;
-	std::cout << ex << " = " << ex.extend() << std::endl;
+	Expr ex = -x + (x + z) * (z + 2) - z*z;
+	std::cout << ex << " = " << ex.unroll() << std::endl;
 
 }

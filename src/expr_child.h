@@ -188,6 +188,8 @@ class CompExpr : public ParentExpr{ // Exression which is a Compound-Expression,
 
 		friend const CompExpr& operator* (const CompExpr& e1, const Var& v1);
 		friend const CompExpr& operator* (const Var& v1, const CompExpr& e1);
+
+		friend const CompExpr& operator- (const CompExpr& e1);
 };
 
 const CompExpr& operator+ (const Var& v, int c);
@@ -199,3 +201,4 @@ const CompExpr& operator* (int c, const Var& v);
 const CompExpr& operator+ (const Var& v1, const Var& v2);
 const CompExpr& operator- (const Var& v1, const Var& v2);
 const CompExpr& operator* (const Var& v1, const Var& v2);
+const CompExpr& operator- (const Var& v);

@@ -1,4 +1,5 @@
 #include "expr_child.h"
+#include <string>
 
 // Definition of VarExpr class ---------------------------------------------------------------------------------
 // (few methods of class VarExpr are defined afterward, in order to group the definitions of different derived classes togheter)
@@ -613,6 +614,8 @@ void ParentExpr::insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned
 	for(auto& e : vec)
 		if(e.second == monomial.second){ // if a monomial with the same degree already exists, sum the constant part of the two
 			e.first += monomial.first;
+			if(e.first == 0) // if the constant part now is 0, remove the monomial from the vector
+				vec.erase(std::remove(vec.begin(),vec.end(),e),vec.end());
 			return;
 		}
 	vec.push_back(monomial); // if it is not present just insert the monomial
@@ -654,13 +657,12 @@ const CompExpr& operator+ (int c, const Var& v){
 }
 const CompExpr& operator- (const Var& v, int c){
 	VarExpr*   v_e = new VarExpr{v};
-	ConstExpr* c_e = new ConstExpr{c};
-	return * new const CompExpr{*v_e,*c_e,operation::sub};
+	ConstExpr* c_e = new ConstExpr{-c};
+	return * new const CompExpr{*v_e,*c_e,operation::sum};
 }
 const CompExpr& operator- (int c, const Var& v){
-	VarExpr* v_e   = new VarExpr{v};
-	ConstExpr* c_e = new ConstExpr{c};
-	return * new const CompExpr{*c_e,*v_e,operation::sub};
+	ConstExpr* c_e 	     = new ConstExpr{c};
+	return * new const CompExpr{*c_e,-v,operation::sum};
 }
 const CompExpr& operator* (const Var& v, int c){
 	VarExpr* v_e   = new VarExpr{v};
@@ -678,14 +680,20 @@ const CompExpr& operator+ (const Var& v1, const Var& v2){
 	return * new const CompExpr{*v_e_1,*v_e_2,operation::sum};
 }
 const CompExpr& operator- (const Var& v1, const Var& v2){
-	VarExpr* v_e_1 = new VarExpr{v1};
-	VarExpr* v_e_2 = new VarExpr{v2};
-	return * new const CompExpr{*v_e_1,*v_e_2,operation::sub};
+	VarExpr* v_e_1 	      = new VarExpr{v1};
+	return * new const CompExpr{*v_e_1,-v2,operation::sum};
 }
 const CompExpr& operator* (const Var& v1, const Var& v2){
 	VarExpr* v_e_1 = new VarExpr{v1};
 	VarExpr* v_e_2 = new VarExpr{v2};
 	return * new const CompExpr{*v_e_1,*v_e_2,operation::mul};
+}
+
+const CompExpr& operator- (const Var& v){
+	ConstExpr* minus_one = new ConstExpr{-1};
+	VarExpr* v_e = new VarExpr{v};
+	std::string str = "-" + v.get_name();
+	return * new const CompExpr{*minus_one,*v_e,operation::mul};
 }
 
 const CompExpr& operator+ (const CompExpr& e1, int i){
@@ -701,15 +709,14 @@ const CompExpr& operator+(int i, const CompExpr& e1){
 }
 
 const CompExpr& operator- (const CompExpr& e1, int i){
-	ConstExpr* c_e = new ConstExpr{i};
-	std::string str = "(" + e1.to_string() + ") - " + c_e->to_string();
-	return * new const CompExpr{str,e1,*c_e,operation::sub};
+	ConstExpr* c_e = new ConstExpr{-i};
+	std::string str = "(" + e1.to_string() + ") + " + c_e->to_string();
+	return * new const CompExpr{str,e1,*c_e,operation::sum};
 }
 
 const CompExpr& operator-(int i, const CompExpr& e1){
-	ConstExpr* c_e = new ConstExpr{i};
-	std::string str = c_e->to_string() + " -(" + e1.to_string() + ")";
-	return * new const CompExpr{str,*c_e,e1,operation::sub};
+	ConstExpr* c_e 	     = new ConstExpr{i};
+	return * new const CompExpr{*c_e,-e1,operation::sum};
 }
 
 const CompExpr& operator* (const CompExpr& e1, int i){
@@ -737,15 +744,14 @@ const CompExpr& operator+(const Var& v, const CompExpr& e1){
 }
 
 const CompExpr& operator- (const CompExpr& e1, const Var& v){
-	VarExpr* v_e = new VarExpr{v};
 	std::string str = "(" + e1.to_string() + ") - " + v.get_name();
-	return * new const CompExpr{str,e1,*v_e,operation::sub};
+	return * new const CompExpr{str,e1,-v,operation::sum};
 }
 
 const CompExpr& operator-(const Var& v, const CompExpr& e1){
-	VarExpr* v_e = new VarExpr{v};
+	VarExpr* v_e 	     = new VarExpr{v};
 	std::string str = v.get_name() + " - (" + e1.to_string() + ")";
-	return * new const CompExpr{str,*v_e,e1,operation::sub};
+	return * new const CompExpr{str,*v_e,-e1,operation::sum};
 }
 
 const CompExpr& operator* (const CompExpr& e1, const Var& v){
@@ -767,10 +773,16 @@ const CompExpr& operator+(const CompExpr& e1, const CompExpr& e2){
 
 const CompExpr& operator-(const CompExpr& e1, const CompExpr& e2){
 	std::string str = "(" + e1.to_string() + ") - (" + e2.to_string() + ")"; 
-	return * new const CompExpr{str,e1,e2,operation::sub};
+	return * new const CompExpr{str,e1,-e2,operation::sum};
 }
 
 const CompExpr& operator*(const CompExpr& e1, const CompExpr& e2){
 	std::string str = "(" + e1.to_string() + ") * (" + e2.to_string() + ")"; 
 	return * new const CompExpr{str,e1,e2,operation::mul};
+}
+
+const CompExpr& operator-(const CompExpr& e1){
+	ConstExpr* minus_one = new ConstExpr{-1};
+	std::string str = "-(" + e1.to_string() + ")";
+	return * new const CompExpr{str,*minus_one,e1,operation::mul};
 }
