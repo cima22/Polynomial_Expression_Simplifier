@@ -1,5 +1,7 @@
 #include "expr.h"
 
+typedef std::pair<int,std::map<Var,unsigned int>> monomial;
+
 // Constructors
 
 Expr::Expr() = default;
@@ -49,8 +51,8 @@ std::map<unsigned int,Expr> Expr::get_coeffs(const Var &v){
 }
 
 bool equivalent(const Expr& e1, const Expr& e2){ // if two expressions are composed of the same monomials, then they are equal
-	std::vector<std::pair<int,std::map<Var,unsigned int>>> v1 = e1.obj->get_vector_of_monomials();
-	std::vector<std::pair<int,std::map<Var,unsigned int>>> v2 = e2.obj->get_vector_of_monomials();
+	std::vector<monomial> v1 = e1.obj->get_vector_of_monomials();
+	std::vector<monomial> v2 = e2.obj->get_vector_of_monomials();
 	return std::is_permutation(v1.begin(),v1.end(),v2.begin());
 }
 

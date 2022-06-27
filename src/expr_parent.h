@@ -7,6 +7,8 @@
 #include <map>
 #include "var.h"
 
+typedef std::pair<int,std::map<Var,unsigned int>> monomial;
+
 /*
  * Class which represents the actual expression. Since every expression is either a constant, a single variable or a sum/subtraction/multiplication of other two expressions,
  * this is an abstract class representing a general expression. Three more derived classes are defined to handle every case described above.
@@ -59,15 +61,13 @@ class ParentExpr{
 
 		virtual const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const = 0;
 
-		virtual std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const = 0; // returns the vector of monomials which composes the expressions. 
+		virtual std::vector<monomial> get_vector_of_monomials() const = 0; // returns the vector of monomials which composes the expressions. 
 					//A monomial is in the form of a pair, where the first entry is the constant part and the second a map which maps every variable with its degree in the monomial
-		void insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned int>>>& vec) const;
-		virtual std::pair<int,std::map<Var,unsigned int>> get_monomial() const = 0;
+		void insert_monomial(std::vector<monomial>& vec) const;
+		virtual monomial get_monomial() const = 0;
 		
 		// Friend operators
 		friend std::ostream& operator<<(std::ostream& os, const ParentExpr& expr);
 		friend bool equal (const ParentExpr& e1, const ParentExpr& e2);
 };
-
-bool are_same_type(const ParentExpr& e1, const ParentExpr& e2);
 #endif

@@ -42,8 +42,8 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		const ParentExpr& extract_monomial(const Var& v) const override;
 		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
 		
-		std::pair<int,std::map<Var,unsigned int>> get_monomial() const override;
-		std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const override;
+		monomial get_monomial() const override;
+		std::vector<monomial> get_vector_of_monomials() const override;
 };
 
 class ConstExpr : public ParentExpr{ // Expression which is composed only by one constant, e.g.: 2
@@ -82,11 +82,11 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		const ConstExpr& extract_monomial(const Var& v) const override;
 		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
 		
-		std::pair<int,std::map<Var,unsigned int>> get_monomial() const override;
-		std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const override;
+		monomial get_monomial() const override;
+		std::vector<monomial> get_vector_of_monomials() const override;
 };
 
-enum class operation {sum, sub, mul};
+enum class operation {sum, mul};
 
 class CompExpr : public ParentExpr{ // Exression which is a Compound-Expression, that is it is composed by the sum, subtraction or multiplication of two expressions
 	private:
@@ -147,7 +147,7 @@ class CompExpr : public ParentExpr{ // Exression which is a Compound-Expression,
 		// Methods that can be used only if the expression is a monomial
 		int get_monomial_const() const override;
 		int get_degree(const Var& v) const override;
-		std::pair<int,std::map<Var,unsigned int>> get_monomial() const override; // Returns the monomial in the form of std::pair;
+		monomial get_monomial() const override; // Returns the monomial in the form of std::pair;
 		const ParentExpr& ordered_monomial() const; // Returns an expression which is the same monomial, but ordered: the variables are in alphabetic order and all the constant part are
 							    // multiplied into one
 
@@ -163,7 +163,7 @@ class CompExpr : public ParentExpr{ // Exression which is a Compound-Expression,
 		void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs,const Var& v) const override;
 		const ParentExpr& extract_monomial(const Var& v) const override;
 
-		std::vector<std::pair<int,std::map<Var,unsigned int>>> get_vector_of_monomials() const override;
+		std::vector<monomial> get_vector_of_monomials() const override;
 
 		// Friend operators
 

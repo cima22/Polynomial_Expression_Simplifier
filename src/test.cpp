@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(print){
 }
 
 BOOST_AUTO_TEST_CASE(equal){
-	BOOST_TEST_MESSAGE("\nTesting equal(), which compares two expressions:");
+	BOOST_TEST_MESSAGE("\nTesting equivalent(), which compares two expressions:");
 	Expr ex2 = 2*y + z*(-y - x) + 2*x;
 	BOOST_TEST_MESSAGE(ex << " == " << ex2);
 	BOOST_TEST_REQUIRE(equivalent(ex,ex2));

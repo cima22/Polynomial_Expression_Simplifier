@@ -196,7 +196,7 @@ const ParentExpr& CompExpr::create_monomial(const Var& v, unsigned int degree) {
 
 // End of static methods
 
-const operation CompExpr::get_op()      const { return op; }
+const operation   CompExpr::get_op()    const { return op; }
 const ParentExpr& CompExpr::get_sub_1() const { return sub_1; }
 const ParentExpr& CompExpr::get_sub_2() const { return sub_2; }
 
@@ -513,7 +513,6 @@ bool CompExpr::is_extended() const { //check if the expression is in the form of
 		default:
 			return false;
 	}
-	
 }
 
 bool CompExpr::is_only_mult() const { // check that the comp expr is a monomial, i.e. all the sub operations are multiplications
@@ -535,7 +534,7 @@ const ParentExpr& CompExpr::ordered_monomial() const { // return a monomial whic
 	return create_monomial(get_monomial());        // e.g.: ordered_monomial(x * z * 2 * y * x * x * 4) = 8 * x * x * x * y * z
 }
 
-std::pair<int,std::map<Var,unsigned int>> CompExpr::get_monomial() const{ // return the monomial in form of a std::pair<int,std::map<Var, unsigned int>>
+monomial CompExpr::get_monomial() const{ // return the monomial in form of a std::pair<int,std::map<Var, unsigned int>>
 	if(!is_only_mult())
 		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
 	std::pair<int,std::map<Var,unsigned int>> monomial{};
@@ -547,24 +546,24 @@ std::pair<int,std::map<Var,unsigned int>> CompExpr::get_monomial() const{ // ret
 	return monomial;
 }
 
-std::pair<int,std::map<Var,unsigned int>> VarExpr::get_monomial() const{ // return the variable in form of a std::pair
+monomial VarExpr::get_monomial() const{ // return the variable in form of a std::pair
 	std::map<Var,unsigned int> degree = {{vars[0],1}};
 	std::pair<int,std::map<Var,unsigned int>> monomial{1,degree};
 	return monomial;
 }
 
-std::pair<int,std::map<Var,unsigned int>> ConstExpr::get_monomial() const{ // return the constant in form of a std::pair
+monomial ConstExpr::get_monomial() const{ // return the constant in form of a std::pair
 	std::map<Var,unsigned int> degree{};
 	std::pair<int,std::map<Var,unsigned int>> monomial{value,degree};
 	return monomial;
 }
 
-const ParentExpr& CompExpr::create_monomial(std::pair<int,std::map<Var,unsigned int>> monomial) { // creates an expression starting from a monomial in form of std::pair
+const ParentExpr& CompExpr::create_monomial(monomial m) { // creates an expression starting from a monomial in form of std::pair
 	std::queue<const ParentExpr*> tmp_monomials{};
-	for(auto& e : monomial.second) // for every variable with its degree
+	for(auto& e : m.second) // for every variable with its degree
 		tmp_monomials.push(&create_monomial(e.first, e.second)); // create a monomial with that variable and that degree and put it in a queue
-	const ParentExpr* tmp_monomial = new ConstExpr{monomial.first};  // create the ConstExpr that will store the constant part
-	if(monomial.first == 1 && !tmp_monomials.empty()){ // if the constant part is one and there are variables, omit the 1 in order not to have expressions like 1 * x * x * y
+	const ParentExpr* tmp_monomial = new ConstExpr{m.first};  // create the ConstExpr that will store the constant part
+	if(m.first == 1 && !tmp_monomials.empty()){ // if the constant part is one and there are variables, omit the 1 in order not to have expressions like 1 * x * x * y
 		delete tmp_monomial;
 		tmp_monomial = tmp_monomials.front();
 		tmp_monomials.pop();
@@ -576,8 +575,8 @@ const ParentExpr& CompExpr::create_monomial(std::pair<int,std::map<Var,unsigned 
 	return *tmp_monomial;
 }
 
-std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_monomials() const { // return the vector of monomials that composes an expression
-	std::vector<std::pair<int,std::map<Var,unsigned int>>> vec{};
+std::vector<monomial> CompExpr::get_vector_of_monomials() const { // return the vector of monomials that composes an expression
+	std::vector<monomial> vec{};
 	const CompExpr& extended = dynamic_cast<const CompExpr&>(extend()); // extend the expression so to have it in the form of sum of monomials
 	switch(extended.get_op()){
 		case operation::mul:
@@ -607,7 +606,7 @@ std::vector<std::pair<int,std::map<Var,unsigned int>>> CompExpr::get_vector_of_m
 	return vec;
 }
 
-void ParentExpr::insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned int>>>& vec) const { // insert the monomial in an existing vector of monomials
+void ParentExpr::insert_monomial(std::vector<monomial>& vec) const { // insert the monomial in an existing vector of monomials
 	if(!is_only_mult())
 		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
 	std::pair<int,std::map<Var,unsigned int>> monomial = get_monomial();
@@ -622,14 +621,14 @@ void ParentExpr::insert_monomial(std::vector<std::pair<int,std::map<Var,unsigned
 
 }
 
-std::vector<std::pair<int,std::map<Var,unsigned int>>> VarExpr::get_vector_of_monomials() const {// trivial if the expression is a VarExpr
-	std::vector<std::pair<int,std::map<Var,unsigned int>>> q;
+std::vector<monomial> VarExpr::get_vector_of_monomials() const {// trivial if the expression is a VarExpr
+	std::vector<monomial> q;
 	q.push_back(get_monomial());
 	return q;
 }
 
-std::vector<std::pair<int,std::map<Var,unsigned int>>> ConstExpr::get_vector_of_monomials() const {// trivial if the expression is a ConstExpr
-	std::vector<std::pair<int,std::map<Var,unsigned int>>> q;
+std::vector<monomial> ConstExpr::get_vector_of_monomials() const {// trivial if the expression is a ConstExpr
+	std::vector<monomial> q;
 	q.push_back(get_monomial());
 	return q;
 }
