@@ -693,7 +693,7 @@ const CompExpr& operator- (const Var& v){
 	ConstExpr* minus_one = new ConstExpr{-1};
 	VarExpr* v_e = new VarExpr{v};
 	std::string str = "-" + v.get_name();
-	return * new const CompExpr{*minus_one,*v_e,operation::mul};
+	return * new const CompExpr{str,*minus_one,*v_e,operation::mul};
 }
 
 const CompExpr& operator+ (const CompExpr& e1, int i){

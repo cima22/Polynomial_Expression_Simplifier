@@ -44,4 +44,5 @@ class Expr{
 
 		friend std::ostream& operator<<(std::ostream& os, const Expr& ex);
 		friend bool equivalent(const Expr& e1, const Expr& e2);
+		friend bool operator==(const Expr& e1, const Expr& e2);
 };

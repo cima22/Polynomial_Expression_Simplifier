@@ -1,10 +1,23 @@
 #define BOOST_TEST_MODULE polynomial_algebraic_expression
+#define BOOST_TEST_LOG_LEVEL = all
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
+#include <boost/test/unit_test_log.hpp>
 #include <iostream>
+#include "expr.h"
 using boost::test_tools::output_test_stream;
 
+Var x{"x"};
+Var y{"y"};
+Var z{"z"};
+
+Expr ex = (x + y) * (2 - z);
+
+std::cout << ex;
+
 BOOST_AUTO_TEST_CASE(print){
+	BOOST_TEST_MESSAGE("Unit testing to show classes features...");
+	BOOST_TEST_MESSAGE("Testing overload operator <<:");
 	output_test_stream output;
 	output << "cxiao";
 	BOOST_TEST_MESSAGE("Test");

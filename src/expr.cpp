@@ -65,3 +65,7 @@ std::ostream& operator<<(std::ostream& os, const Expr& ex){
  os << *ex.obj; // use the operator defined in ParentExpr
   return os;
 }
+
+bool operator==(const Expr& e1, const Expr& e2){
+	return equivalent(e1,e2);
+}

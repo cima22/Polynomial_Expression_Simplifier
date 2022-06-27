@@ -30,6 +30,12 @@ $(OBJ_PATH)/expr_child.o: $(SRC_PATH)/expr_child.cpp
 $(OBJ_PATH)/expr_exception.o: $(SRC_PATH)/expr_exception.cpp
 	$(CC) -o $(OBJ_PATH)/expr_exception.o -c $(SRC_PATH)/expr_exception.cpp
 
+$(OBJ_PATH)/test.o: $(SRC_PATH)/test.cpp
+	$(CC) -o $(OBJ_PATH)/test.o -c $(SRC_PATH)/test.cpp
+
+test: $(OBJ_PATH)/test.o $(OBJ_PATH)/expr.o $(OBJ_PATH)/var.o $(OBJ_PATH)/expr_parent.o $(OBJ_PATH)/expr_child.o $(OBJ_PATH)/expr_exception.o
+	$(CC) -o $(BIN_PATH)/test.x $(OBJ_PATH)/test.o $(OBJ_PATH)/expr.o $(OBJ_PATH)/var.o $(OBJ_PATH)/expr_parent.o $(OBJ_PATH)/expr_child.o $(OBJ_PATH)/expr_exception.o
+
 clean:
 	rm -rf $(BIN_PATH)/*
 	rm -rf $(OBJ_PATH)/*
