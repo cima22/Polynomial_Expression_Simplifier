@@ -12,8 +12,9 @@ int main(int argc, char* argv[]){
 	Var y{"y"};
 	Var z{"z"};
 
-	//Expr ex = -x + (x + z) * (z + 2) - z*z;
-	Expr ex = (x + y) * (2 - z);
+	
+	Expr ex =  2*x + 5 + (x + y) * (x*x -2) + 7;
+
 	std::cout << ex << " = " << ex.unroll() << std::endl;
 
 }
