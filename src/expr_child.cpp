@@ -7,20 +7,22 @@
 VarExpr::VarExpr(const Var& v):
 	ParentExpr(v.get_name(),{v}){}
 
+VarExpr::~VarExpr() = default; // default destructor is ok
+
 void VarExpr::set_value(int v){
 	vars[0].set_value(v);
 }
 
-const VarExpr& VarExpr::stretch() const { // There is no need to stretch, it is sufficient to return a copy of the object
+const VarExpr& VarExpr::clone() const{
 	return * new VarExpr{*this};
+}
+
+const VarExpr& VarExpr::stretch() const { // There is no need to stretch, it is sufficient to return a copy of the object
+	return clone();
 }
 
 const VarExpr& VarExpr::extend() const { // There is no need to extend
-	return * new VarExpr{*this}; 
-}
-
-const VarExpr& VarExpr::clone() const{
-	return * new VarExpr{*this};
+	return clone(); 
 }
 
 bool VarExpr::is_only_mult() const{ // A single variable is always a monomial
@@ -30,8 +32,6 @@ bool VarExpr::is_only_mult() const{ // A single variable is always a monomial
 int VarExpr::get_degree(const Var& v) const{ // returns 1 only if the variable is the same
 	return v == vars[0] ? 1 : 0;
 }
-
-VarExpr::~VarExpr() = default; // default destructor is ok
 
 bool VarExpr::is_extended() const { // a variable is always a monomial
 	return true;
@@ -80,18 +80,24 @@ const ParentExpr& VarExpr::replace(const std::map<Var,const ParentExpr*>& repl) 
 bool VarExpr::is_VarExpr(const ParentExpr& ex){ return dynamic_cast<const VarExpr*>(&ex); } // tries to cast the parent reference to a VarExpr reference
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-// Definition of VarExpr class ------------------------------------------------------------------------------------------------------------------------------
+// Definition of ConstExpr class ------------------------------------------------------------------------------------------------------------------------------
 // (few methods of class VarExpr are defined afterward, in order to group the definitions of different derived classes together)
 
 ConstExpr::ConstExpr(const int i):
 	value{i},ParentExpr(std::to_string(i)){}
 
-const ConstExpr& ConstExpr::stretch() const {
+ConstExpr::~ConstExpr() = default;
+
+const ConstExpr& ConstExpr::clone() const{
 	return * new ConstExpr{*this};
 }
 
+const ConstExpr& ConstExpr::stretch() const {
+	return clone;
+}
+
 const ConstExpr& ConstExpr::extend() const {
-	return *this;
+	return clone();
 }
 
 bool ConstExpr::is_extended() const {
@@ -105,12 +111,6 @@ bool ConstExpr::is_only_mult() const{
 int ConstExpr::get_degree(const Var& v) const {
 	return 0;
 }
-
-const ConstExpr& ConstExpr::clone() const{
-	return * new ConstExpr{*this};
-}
-
-ConstExpr::~ConstExpr() = default;
 
 std::map<unsigned int, const ParentExpr*> ConstExpr::get_coeffs(const Var& v) const { // the map that has to be returned is empty, there are no coefficient for any variable
 	return std::map<unsigned int, const ParentExpr*>{};
@@ -130,11 +130,11 @@ void ConstExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, 
 }
 
 const ConstExpr& ConstExpr::extract_monomial(const Var& v) const {
-	return this->clone();
+	return clone();
 }
 
 const ParentExpr& ConstExpr::replace(const std::map<Var,const ParentExpr*>& repl) const {
-	return this->clone();
+	return clone();
 }
 
 bool ConstExpr::is_ConstExpr(const ParentExpr& ex){ return dynamic_cast<const ConstExpr*>(&ex); }
@@ -157,8 +157,6 @@ std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, 
 	}
 	return std::string{e1.to_string() + " " + op_c + " " + e2.to_string()};
 }
-
-bool CompExpr::is_CompExpr(const ParentExpr& ex) { return dynamic_cast<const CompExpr*>(&ex); }
 
 CompExpr::CompExpr(const ParentExpr& e1, const ParentExpr& e2, const operation op):
 	sub_1{e1}, sub_2{e2}, op{op}, ParentExpr(create_string(e1,e2,op))
@@ -190,6 +188,25 @@ const ParentExpr& CompExpr::create_monomial(const Var& v, unsigned int degree) {
 		return var;
 	return * new CompExpr{var,create_monomial(v,degree - 1),operation::mul};
 };
+
+const ParentExpr& CompExpr::create_monomial(monomial m) { // creates an expression starting from a monomial in form of std::pair
+	std::queue<const ParentExpr*> tmp_monomials{};
+	for(auto& e : m.second) // for every variable with its degree
+		tmp_monomials.push(&create_monomial(e.first, e.second)); // create a monomial with that variable and that degree and put it in a queue
+	const ParentExpr* tmp_monomial = new ConstExpr{m.first};  // create the ConstExpr that will store the constant part
+	if(m.first == 1 && !tmp_monomials.empty()){ // if the constant part is one and there are variables, omit the 1 in order not to have expressions like 1 * x * x * y
+		delete tmp_monomial;
+		tmp_monomial = tmp_monomials.front();
+		tmp_monomials.pop();
+	}
+	while(!tmp_monomials.empty()){ // while there are monomial to mulitply in the queue
+		tmp_monomial = new CompExpr{*tmp_monomial,*tmp_monomials.front(),operation::mul}; // multiply what we have so far with the new monomial
+		tmp_monomials.pop(); // delete from queue
+	}
+	return *tmp_monomial;
+}
+
+bool CompExpr::is_CompExpr(const ParentExpr& ex) { return dynamic_cast<const CompExpr*>(&ex); }
 
 // End of static methods
 
@@ -555,23 +572,6 @@ monomial ConstExpr::get_monomial() const{ // return the constant in form of a st
 	std::map<Var,unsigned int> degree{};
 	std::pair<int,std::map<Var,unsigned int>> monomial{value,degree};
 	return monomial;
-}
-
-const ParentExpr& CompExpr::create_monomial(monomial m) { // creates an expression starting from a monomial in form of std::pair
-	std::queue<const ParentExpr*> tmp_monomials{};
-	for(auto& e : m.second) // for every variable with its degree
-		tmp_monomials.push(&create_monomial(e.first, e.second)); // create a monomial with that variable and that degree and put it in a queue
-	const ParentExpr* tmp_monomial = new ConstExpr{m.first};  // create the ConstExpr that will store the constant part
-	if(m.first == 1 && !tmp_monomials.empty()){ // if the constant part is one and there are variables, omit the 1 in order not to have expressions like 1 * x * x * y
-		delete tmp_monomial;
-		tmp_monomial = tmp_monomials.front();
-		tmp_monomials.pop();
-	}
-	while(!tmp_monomials.empty()){ // while there are monomial to mulitply in the queue
-		tmp_monomial = new CompExpr{*tmp_monomial,*tmp_monomials.front(),operation::mul}; // multiply what we have so far with the new monomial
-		tmp_monomials.pop(); // delete from queue
-	}
-	return *tmp_monomial;
 }
 
 std::vector<monomial> CompExpr::get_vector_of_monomials() const { // return the vector of monomials that composes an expression
