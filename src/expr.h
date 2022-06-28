@@ -34,7 +34,7 @@ class Expr{
 		std::map<unsigned int,Expr> get_coeffs(const Var& v);
 		Expr replace(const std::map<Var,Expr>& repl);
 		bool equivalent(const Expr& e1, const Expr& e2);
-		const Expr unroll();
+		Expr unroll();
 		const ParentExpr& get_obj() const;
 
 		Expr& operator=(const Expr& expr) = default;

@@ -38,7 +38,7 @@ std::vector<Var> Expr::get_variables() const{
 	return obj->get_variables();
 }
 
-const Expr Expr::unroll(){
+Expr Expr::unroll(){
 	return Expr{obj->unroll()};
 }
 
