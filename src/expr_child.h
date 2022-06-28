@@ -19,30 +19,29 @@ class VarExpr : public ParentExpr{ // Expression which is composed only by one v
 		// Public methods
 
 		void set_value(int v); // to set the value of the variable
-		bool is_only_mult()      const override;
-		const VarExpr& clone()   const override;
+		bool           is_only_mult() const override;
+		const VarExpr& clone()        const override;
 		static bool is_VarExpr(const ParentExpr& ex); // static method to check if the reference is to an instance of VarExpr
+		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v)      const override;
+		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
 
 		VarExpr& operator=(const VarExpr& expr) = default;
 		VarExpr& operator=(VarExpr&& expr)      = default;
 		
 		// Methods that can be used only if the expression is a monomial (in this case it is always a monomial)
-		int get_degree(const Var& v) const override;
-		int get_monomial_const() const override;
+
+		int      get_degree(const Var& v) const override;
+		int      get_monomial_const()     const override;
+		monomial get_monomial()           const override;
+		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
+		const ParentExpr& extract_monomial(const Var& v) const override;
 
 		// Override of methods of parent class to make the expressions as a sum of monomials (in this case it is sufficient to return the expression)
 
 		const VarExpr&    stretch() const override;
 		const VarExpr&    extend()  const override;
 		const ParentExpr& unroll()  const override;
-
-		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
-
-		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
-		const ParentExpr& extract_monomial(const Var& v) const override;
-		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
 		
-		monomial get_monomial() const override;
 		std::vector<monomial> get_vector_of_monomials() const override;
 };
 
@@ -63,26 +62,25 @@ class ConstExpr : public ParentExpr{ // Expression which is composed only by one
 		const ConstExpr& clone() const override;
 		bool is_only_mult()      const override;
 		static bool is_ConstExpr(const ParentExpr& ex); // static method to check if the reference is to an instance of ConstExpr
+		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
+		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v)      const override;
+		
 		ConstExpr& operator=(const ConstExpr& expr) = default;
 		ConstExpr& operator=(ConstExpr&& expr)      = default;
 		
 		// Methods that can be used only if the expression is a monomial (in this case it is always a monomial)
-		int get_degree(const Var& v) const override;
-		int get_monomial_const() const override;
+		int      get_degree(const Var& v) const override;
+		int      get_monomial_const()     const override;
+		monomial get_monomial()           const override;
+		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
+		const ConstExpr& extract_monomial(const Var& v) const override;
 
 		// Override of methods of parent class to make the expressions as a sum of monomials (in this case is sufficient to return the expression)
 
 		const ConstExpr& stretch() const override;
 		const ConstExpr& extend()  const override;
-		const ParentExpr& unroll() const override;
+		const ParentExpr& unroll() const override;	
 		
-		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
-
-		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& v) const override;
-		const ConstExpr& extract_monomial(const Var& v) const override;
-		void insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs,const Var& v) const override;
-		
-		monomial get_monomial() const override;
 		std::vector<monomial> get_vector_of_monomials() const override;
 };
 
@@ -132,11 +130,16 @@ class CompExpr : public ParentExpr{ // Exression which is a Compound-Expression,
 		
 		// Public methods
 		
-		const operation get_op()      const;
+		const operation   get_op()    const;
 		const ParentExpr& get_sub_1() const;
 		const ParentExpr& get_sub_2() const;
 		bool  is_only_mult()          const override;
 		const CompExpr& clone()       const override;
+		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& x) const override;
+		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
+
+		// Static methods
+
 		static bool is_CompExpr(const ParentExpr& ex); // checks if the reference is to an instance of CompExpr
 		static const ParentExpr& create_monomial(const Var& v, unsigned int degree); // static method which given a variable and a degree, returns the monomial x**degree 
 									// e.g. create_monomial(x,4) creates the expression x*x*x*x
@@ -145,24 +148,22 @@ class CompExpr : public ParentExpr{ // Exression which is a Compound-Expression,
 									// e.g. create_monomial(< 4 , < x::2, y::2, z::1 > >) = 4 * x * x * y * y * z
 		
 		// Methods that can be used only if the expression is a monomial
-		int get_monomial_const() const override;
+		
+		int get_monomial_const()     const override;
 		int get_degree(const Var& v) const override;
-		monomial get_monomial() const override; // Returns the monomial in the form of std::pair;
+		monomial get_monomial()      const override; // Returns the monomial in the form of std::pair;
 		const ParentExpr& ordered_monomial() const; // Returns an expression which is the same monomial, but ordered: the variables are in alphabetic order and all the constant part are
 							    // multiplied into one
+		void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs,const Var& v) const override;
+		const ParentExpr& extract_monomial(const Var& v) const override;
 
 		// Override of methods of parent class to make the expressions as a sum of monomials (in this case is sufficient to return the expression)
+
 		const CompExpr&   stretch() const override; // Recursively performs stretch to its sub-expressions in order to distribute the sums and multiplications. 
 							    // Since it is not enough to obtain a form of sum of monomials, the extend() methods comes to help.
 		const CompExpr&   extend()  const override; // Performs stretch() until the expression is in the form of sum of monomials
 		const ParentExpr& unroll()  const override; // Performs extend() and then sums all the monomials with the same degree. This method is also available to the "interface" Expr.
 		
-		const ParentExpr& replace(const std::map<Var,const ParentExpr*>& repl) const override;
-
-		std::map<unsigned int,const ParentExpr*> get_coeffs(const Var& x) const override;
-		void insert_coeff(std::map<unsigned int,const ParentExpr*>& coeffs,const Var& v) const override;
-		const ParentExpr& extract_monomial(const Var& v) const override;
-
 		std::vector<monomial> get_vector_of_monomials() const override;
 
 		// Friend operators

@@ -7,16 +7,13 @@ ParentExpr::~ParentExpr(){};
 
 ParentExpr::ParentExpr(const std::string& expr):
 	expression{expr},vars{}{
-
-	extract_vars();
-
+	extract_vars(); // extract the variables from the string format and construct the array
 	}
 
 ParentExpr::ParentExpr(const std::string& expr, const std::vector<Var>& vars):
 	expression{expr},vars{vars}{}
 
 void ParentExpr::extract_vars(){
-	
 	std::string work = expression;
 	std::vector<char> names;
 	for(const char c : work){
@@ -27,14 +24,11 @@ void ParentExpr::extract_vars(){
 	}
 	for(const char name : names)
 		vars.push_back(Var{std::string(1,name)});
-
 }
 
 std::vector<Var> ParentExpr::get_variables() const { return vars; }
 
 const std::string& ParentExpr::to_string() const { return expression; }
-
-//------------------------- From now on, operators definition only ---------------------------------------------------
 
 std::ostream& operator<<(std::ostream& os, const ParentExpr& expr){
 	os << expr.expression;

@@ -148,9 +148,6 @@ std::string CompExpr::create_string(const ParentExpr& e1, const ParentExpr& e2, 
 		case operation::sum:
 			op_c = '+';
 			break;
-		case operation::sub:
-			op_c = '-';
-			break;
 		case operation::mul:
 			op_c = '*';
 			break;
@@ -253,14 +250,16 @@ void CompExpr::insert_coeff(std::map<unsigned int, const ParentExpr*>& coeffs, c
 }
 
 int CompExpr::get_degree(const Var& v) const { // the degree of the monomial in respect to the variable is the sum of the degree of the monomial in the sub expressions
-	return sub_1.get_degree(v) + sub_2.get_degree(v);	
 	if(!is_only_mult())
 		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
+	return sub_1.get_degree(v) + sub_2.get_degree(v);	
 }
 
 const ParentExpr& CompExpr::extract_monomial(const Var& v) const { // extract the monomial part that multiplies the power of the variable in the monomial
-	bool is_var_1 = VarExpr::is_VarExpr(sub_1);//dynamic_cast<const VarExpr*>(&sub_1);
-	bool is_var_2 = VarExpr::is_VarExpr(sub_2);//dynamic_cast<const VarExpr*>(&sub_2);
+	if(!is_only_mult())
+		throw NotMonomial{}; // Throw NotMonomial exception if this funciton is used with a non monomial expression
+	bool is_var_1 = VarExpr::is_VarExpr(sub_1);
+	bool is_var_2 = VarExpr::is_VarExpr(sub_2);
 	if(is_var_1 || is_var_2){ // if at least one of the sub expr is a variable
 		const VarExpr& var = is_var_1 ? dynamic_cast<const VarExpr&>(sub_1) : dynamic_cast<const VarExpr&>(sub_2); // get the variable sub expr
 		const ParentExpr& other_sub = is_var_1 ? sub_2 : sub_1; // get the other sub expr that may be a variable or not

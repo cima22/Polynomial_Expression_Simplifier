@@ -19,8 +19,8 @@ class Expr{
 		// Constructors
 
 		Expr(const ParentExpr * ptr);
-		Expr(const CompExpr& comp_expr);
 		Expr(const ParentExpr& expr);
+		Expr(const CompExpr& comp_expr);
 		Expr(Var& v);
 		Expr(int i);
 		Expr();
