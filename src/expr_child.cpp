@@ -93,7 +93,7 @@ const ConstExpr& ConstExpr::clone() const{
 }
 
 const ConstExpr& ConstExpr::stretch() const {
-	return clone;
+	return clone();
 }
 
 const ConstExpr& ConstExpr::extend() const {
