@@ -1,5 +1,5 @@
-# Polynomial algebraic expressions
-Project related to the course "Advanced Programming" @ Units. The goal is to build a tool able to handle basic operations with polynomial expressions.
+# Polynomial Expression Simplifier
+Project related to the course "Advanced Programming" @ Units. The goal is to build a tool able to handle basic operations with polynomial expressions. The library provides the class "Expression" which is able to simplify a multivariable polynomial expression.
 
 ## Definition of a polynomial algebraic expression
 A *polynomial algebraic expression* is either:
